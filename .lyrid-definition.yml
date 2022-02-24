@@ -1,0 +1,12 @@
+name: sheliak-server
+description: This is a Lyrid application to create a authentication services
+ignoreFiles: .git venv node_modules .idea __pycache__ client
+modules:
+- name: src
+  language: python3.9
+  web: django
+  description: Backend service for sheliak
+  functions:
+  - name: config
+    entry: wsgi.py
+    description: the entry point for the function

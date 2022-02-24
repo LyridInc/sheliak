@@ -1,0 +1,646 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+"An object with an ID"
+interface Node {
+    "The ID of the object."
+    id: ID!
+}
+
+type AccountStatisticsType {
+    deactivated: Int
+    last7DaysTrends: StatisticsTrendsType
+    last90Days: StatisticsType
+    neverLogin: Int
+    staff: Int
+    superuser: Int
+    total: Int
+    unverified: Int
+    verified: Int
+}
+
+"Debugging information for the current query."
+type DjangoDebug {
+    "Executed SQL queries for this API query."
+    sql: [DjangoDebugSQL]
+}
+
+"Represents a single database query made to a Django managed DB."
+type DjangoDebugSQL {
+    "The Django database alias (e.g. 'default')."
+    alias: String!
+    "Duration of this database query in seconds."
+    duration: Float!
+    "Postgres connection encoding if available."
+    encoding: String
+    "Whether this database query was a SELECT."
+    isSelect: Boolean!
+    "Whether this database query took more than 10 seconds."
+    isSlow: Boolean!
+    "Postgres isolation level if available."
+    isoLevel: String
+    "JSON encoded database query parameters."
+    params: String!
+    "The raw SQL of this query, without params."
+    rawSql: String!
+    "The actual SQL sent to this database."
+    sql: String
+    "Start time of this database query."
+    startTime: Float!
+    "Stop time of this database query."
+    stopTime: Float!
+    "Postgres transaction ID if available."
+    transId: String
+    "Postgres transaction status if available."
+    transStatus: String
+    "The type of database being used (e.g. postrgesql, mysql, sqlite)."
+    vendor: String!
+}
+
+type GithubAccessToken {
+    accessToken: String
+}
+
+type LoginStatisticsType implements Node {
+    date: DateTime
+    django: Int
+    facebook: Int
+    github: Int
+    google: Int
+    "The ID of the object."
+    id: ID!
+    ipAddress: String
+    provider: String!
+    timestamp: DateTime!
+    total: Int
+    unique: Int
+    user: UserMeType!
+}
+
+type LoginStatisticsTypeConnection {
+    "Contains the nodes in this connection."
+    edges: [LoginStatisticsTypeEdge]!
+    "Pagination data for this connection."
+    pageInfo: PageInfo!
+}
+
+"A Relay edge containing a `LoginStatisticsType` and its cursor."
+type LoginStatisticsTypeEdge {
+    "A cursor for use in pagination"
+    cursor: String!
+    "The item at the end of the edge"
+    node: LoginStatisticsType
+}
+
+type Mutation {
+    """
+
+    Change account password when user knows the old password.
+
+    A new token and refresh token are sent. User must be verified.
+    """
+    passwordChange(newPassword1: String!, newPassword2: String!, oldPassword: String!): PasswordChange
+    """
+
+    Change user password without old password.
+
+    Receive the token that was sent by email.
+
+    If token and new passwords are valid, update
+    user password and in case of using refresh
+    tokens, revoke all of them.
+
+    Also, if user has not been verified yet, verify it.
+    """
+    passwordReset(newPassword1: String!, newPassword2: String!, token: String!): PasswordReset
+    """
+
+    Set user password - for passwordless registration
+
+    Receive the token that was sent by email.
+
+    If token and new passwords are valid, set
+    user password and in case of using refresh
+    tokens, revoke all of them.
+
+    Also, if user has not been verified yet, verify it.
+    """
+    passwordSet(newPassword1: String!, newPassword2: String!, token: String!): PasswordSet
+    "Same as `grapgql_jwt` implementation, with standard output."
+    refreshToken(refreshToken: String): RefreshToken
+    """
+
+    Register user with fields defined in the settings.
+
+    If the email field of the user model is part of the
+    registration fields (default), check if there is
+    no user with that email or as a secondary email.
+
+    If it exists, it does not register the user,
+    even if the email field is not defined as unique
+    (default of the default django user model).
+
+    When creating the user, it also creates a `UserStatus`
+    related to that user, making it possible to track
+    if the user is archived, verified and has a secondary
+    email.
+
+    Send account verification email.
+
+    If allowed to not verified users login, return token.
+    """
+    register(company: String!, email: String!, firstName: String!, inviteCode: String!, lastName: String, middleName: String, password1: String!, password2: String!): Register
+    """
+
+    Sends activation email.
+
+    It is called resend because theoretically
+    the first activation email was sent when
+    the user registered.
+
+    If there is no user with the requested email,
+    a successful response is returned.
+    """
+    resendActivationEmail(email: String!): ResendActivationEmail
+    "Same as `grapgql_jwt` implementation, with standard output."
+    revokeToken(refreshToken: String): RevokeToken
+    """
+
+    Send password reset email.
+
+    For non verified users, send an activation
+    email instead.
+
+    Accepts both primary and secondary email.
+
+    If there is no user with the requested email,
+    a successful response is returned.
+    """
+    sendPasswordResetEmail(email: String!): SendPasswordResetEmail
+    "Send Welcome email."
+    sendWelcomeEmail: SendWelcomeEmail
+    "Social Auth for JSON Web Token (JWT)"
+    socialAuth(accessToken: String!, provider: String!): SocialAuthJWT
+    socialAuthGithub(code: String!): GithubAccessToken
+    """
+
+    Obtain JSON web token for given user.
+
+    Allow to perform login with different fields,
+    and secondary email if set. The fields are
+    defined on settings.
+
+    Unlike other mutations, if the given credentials are invalid
+    or the user does not exist, a top-level GraphQL error will be
+    returned to the client instead of an "errors"
+    object within the data object.
+
+    Not verified users can login by default. This
+    can be changes on settings.
+
+    If user is archived, make it unarchive and
+    return `unarchiving=True` on output.
+    """
+    tokenAuth(email: String, password: String!): ObtainJSONWebToken
+    """
+
+    Update user model fields, defined on settings.
+
+    User must be verified.
+    """
+    updateAccount(firstName: String, lastName: String): UpdateAccount
+    """
+
+    Verify user account.
+
+    Receive the token that was sent by email.
+    If the token is valid, make the user verified
+    by making the `user.status.verified` field true.
+    """
+    verifyAccount(token: String!): VerifyAccount
+    "Same as `grapgql_jwt` implementation, with standard output."
+    verifyToken(token: String): VerifyToken
+}
+
+"""
+
+Obtain JSON web token for given user.
+
+Allow to perform login with different fields,
+and secondary email if set. The fields are
+defined on settings.
+
+Unlike other mutations, if the given credentials are invalid
+or the user does not exist, a top-level GraphQL error will be
+returned to the client instead of an "errors"
+object within the data object.
+
+Not verified users can login by default. This
+can be changes on settings.
+
+If user is archived, make it unarchive and
+return `unarchiving=True` on output.
+"""
+type ObtainJSONWebToken {
+    errors: ExpectedErrorType
+    payload: GenericScalar!
+    refreshExpiresIn: Int!
+    refreshToken: String!
+    success: Boolean
+    token: String!
+    unarchiving: Boolean
+    user: UserNode
+}
+
+"The Relay compliant `PageInfo` type, containing data necessary to paginate this connection."
+type PageInfo {
+    "When paginating forwards, the cursor to continue."
+    endCursor: String
+    "When paginating forwards, are there more items?"
+    hasNextPage: Boolean!
+    "When paginating backwards, are there more items?"
+    hasPreviousPage: Boolean!
+    "When paginating backwards, the cursor to continue."
+    startCursor: String
+}
+
+"""
+
+Change account password when user knows the old password.
+
+A new token and refresh token are sent. User must be verified.
+"""
+type PasswordChange {
+    errors: ExpectedErrorType
+    refreshToken: String
+    success: Boolean
+    token: String
+}
+
+"""
+
+Change user password without old password.
+
+Receive the token that was sent by email.
+
+If token and new passwords are valid, update
+user password and in case of using refresh
+tokens, revoke all of them.
+
+Also, if user has not been verified yet, verify it.
+"""
+type PasswordReset {
+    errors: ExpectedErrorType
+    success: Boolean
+}
+
+"""
+
+Set user password - for passwordless registration
+
+Receive the token that was sent by email.
+
+If token and new passwords are valid, set
+user password and in case of using refresh
+tokens, revoke all of them.
+
+Also, if user has not been verified yet, verify it.
+"""
+type PasswordSet {
+    errors: ExpectedErrorType
+    success: Boolean
+}
+
+type Query {
+    _debug: DjangoDebug
+    accountStatistics: AccountStatisticsType
+    loginStatistics(after: String, before: String, dateRange: String, first: Int, last: Int, offset: Int): LoginStatisticsTypeConnection
+    me: UserMeType
+    user(
+        "The ID of the object"
+        id: ID!
+    ): UserType
+    users(after: String, before: String, email: String, first: Int, firstName: String, firstName_Istartswith: String, isActive: Boolean, isStaff: Boolean, last: Int, offset: Int, orderBy: [String], search: String, status_Verified: Boolean): UserTypeConnection
+}
+
+"Same as `grapgql_jwt` implementation, with standard output."
+type RefreshToken {
+    errors: ExpectedErrorType
+    payload: GenericScalar!
+    refreshExpiresIn: Int!
+    refreshToken: String!
+    success: Boolean
+    token: String!
+}
+
+"""
+
+Register user with fields defined in the settings.
+
+If the email field of the user model is part of the
+registration fields (default), check if there is
+no user with that email or as a secondary email.
+
+If it exists, it does not register the user,
+even if the email field is not defined as unique
+(default of the default django user model).
+
+When creating the user, it also creates a `UserStatus`
+related to that user, making it possible to track
+if the user is archived, verified and has a secondary
+email.
+
+Send account verification email.
+
+If allowed to not verified users login, return token.
+"""
+type Register {
+    errors: ExpectedErrorType
+    refreshToken: String
+    success: Boolean
+    token: String
+}
+
+"""
+
+Sends activation email.
+
+It is called resend because theoretically
+the first activation email was sent when
+the user registered.
+
+If there is no user with the requested email,
+a successful response is returned.
+"""
+type ResendActivationEmail {
+    errors: ExpectedErrorType
+    success: Boolean
+}
+
+"Same as `grapgql_jwt` implementation, with standard output."
+type RevokeToken {
+    errors: ExpectedErrorType
+    revoked: Int!
+    success: Boolean
+}
+
+"""
+
+Send password reset email.
+
+For non verified users, send an activation
+email instead.
+
+Accepts both primary and secondary email.
+
+If there is no user with the requested email,
+a successful response is returned.
+"""
+type SendPasswordResetEmail {
+    errors: ExpectedErrorType
+    success: Boolean
+}
+
+"Send Welcome email."
+type SendWelcomeEmail {
+    errors: ExpectedErrorType
+    success: Boolean
+}
+
+"Social Auth for JSON Web Token (JWT)"
+type SocialAuthJWT {
+    refreshToken: String
+    social: SocialType
+    token: String
+}
+
+type SocialType {
+    created: DateTime!
+    extraData: SocialCamelJSON
+    id: ID!
+    modified: DateTime!
+    provider: String!
+    uid: String!
+    user: UserMeType!
+}
+
+type StatisticsTrendsType {
+    percentTotal: Float
+    percentVerified: Float
+}
+
+type StatisticsType {
+    deactivated: Int
+    neverLogin: Int
+    staff: Int
+    superuser: Int
+    total: Int
+    unverified: Int
+    verified: Int
+}
+
+"""
+
+Update user model fields, defined on settings.
+
+User must be verified.
+"""
+type UpdateAccount {
+    errors: ExpectedErrorType
+    success: Boolean
+}
+
+"User detail type: Shows extended set of fields from user object"
+type UserMeType {
+    email: String!
+    firstName: String!
+    fullName: String
+    id: UUID!
+    lastName: String!
+    legacyId: String!
+    mobileNumber: String!
+}
+
+type UserNode implements Node {
+    address: String!
+    archived: Boolean
+    company: String!
+    dateJoined: DateTime!
+    dateOfBirth: Date
+    email: String!
+    firstName: String!
+    gender: UserGender
+    "The ID of the object."
+    id: ID!
+    inviteCode: String!
+    "Designates whether this user should be treated as active. Unselect this instead of deleting accounts."
+    isActive: Boolean!
+    "Designates whether the user can log into this admin site."
+    isStaff: Boolean!
+    "Designates that this user has all permissions without explicitly assigning them."
+    isSuperuser: Boolean!
+    lastIp: String
+    lastLogin: DateTime
+    lastName: String!
+    legacyId: String!
+    loginsCount: Int!
+    middleName: String!
+    mobileNumber: String!
+    modified: DateTime!
+    nationality: String!
+    password: String!
+    picture: String!
+    pk: Int
+    secondaryEmail: String
+    socialAuth: [SocialType!]!
+    userLogins(after: String, before: String, first: Int, last: Int, offset: Int): LoginStatisticsTypeConnection!
+    verified: Boolean
+}
+
+type UserType implements Node {
+    address: String!
+    company: String!
+    dateJoined: DateTime!
+    dateOfBirth: Date
+    email: String!
+    firstName: String!
+    fullName: String
+    gender: UserGender
+    "The ID of the object."
+    id: ID!
+    inviteCode: String!
+    "Designates whether this user should be treated as active. Unselect this instead of deleting accounts."
+    isActive: Boolean!
+    "Designates whether the user can log into this admin site."
+    isStaff: Boolean!
+    "Designates that this user has all permissions without explicitly assigning them."
+    isSuperuser: Boolean!
+    lastIp: String
+    lastLogin: DateTime
+    lastName: String!
+    legacyId: String!
+    loginsCount: Int!
+    middleName: String!
+    mobileNumber: String!
+    modified: DateTime!
+    nationality: String!
+    password: String!
+    picture: String!
+    pk: String
+    socialAuth: [SocialType!]!
+    userLogins(after: String, before: String, first: Int, last: Int, offset: Int): LoginStatisticsTypeConnection!
+    verified: Boolean
+}
+
+type UserTypeConnection {
+    edgeCount: Int
+    "Contains the nodes in this connection."
+    edges: [UserTypeEdge]!
+    "Pagination data for this connection."
+    pageInfo: PageInfo!
+    totalCount: Int
+}
+
+"A Relay edge containing a `UserType` and its cursor."
+type UserTypeEdge {
+    "A cursor for use in pagination"
+    cursor: String!
+    "The item at the end of the edge"
+    node: UserType
+}
+
+"""
+
+Verify user account.
+
+Receive the token that was sent by email.
+If the token is valid, make the user verified
+by making the `user.status.verified` field true.
+"""
+type VerifyAccount {
+    errors: ExpectedErrorType
+    success: Boolean
+}
+
+"Same as `grapgql_jwt` implementation, with standard output."
+type VerifyToken {
+    errors: ExpectedErrorType
+    payload: GenericScalar!
+    success: Boolean
+}
+
+"An enumeration."
+enum UserGender {
+    A_
+    "Female"
+    F
+    "Male"
+    M
+    "Others"
+    O
+}
+
+"""
+
+The `Date` scalar type represents a Date
+value as specified by
+[iso8601](https://en.wikipedia.org/wiki/ISO_8601).
+"""
+scalar Date
+
+"""
+
+The `DateTime` scalar type represents a DateTime
+value as specified by
+[iso8601](https://en.wikipedia.org/wiki/ISO_8601).
+"""
+scalar DateTime
+
+"""
+
+Errors messages and codes mapped to
+fields or non fields errors.
+Example:
+{
+field_name: [
+{
+"message": "error message",
+"code": "error_code"
+}
+],
+other_field: [
+{
+"message": "error message",
+"code": "error_code"
+}
+],
+nonFieldErrors: [
+{
+"message": "error message",
+"code": "error_code"
+}
+]
+}
+"""
+scalar ExpectedErrorType
+
+"""
+
+The `GenericScalar` scalar type represents a generic
+GraphQL scalar value that could be:
+String, Boolean, Int, Float, List or Object.
+"""
+scalar GenericScalar
+
+scalar SocialCamelJSON
+
+"""
+
+Leverages the internal Python implmeentation of UUID (uuid.UUID) to provide native UUID objects
+in fields, resolvers and input.
+"""
+scalar UUID

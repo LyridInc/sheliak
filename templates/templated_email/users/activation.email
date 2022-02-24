@@ -1,0 +1,16 @@
+{% block subject %}
+  Account confirmation e-mail
+{% endblock %}
+
+{% block plain %}
+{% include 'templated_email/shared/_header.email' %}
+
+Please activate your account on the link:
+{{ protocol }}://{{ frontend_domain }}/{{ path }}/{{ token }}
+
+{% include 'templated_email/shared/_footer.email' %}
+{% endblock %}
+
+{% block html %}
+{% include 'templated_email/compiled/activation.html' %}
+{% endblock %}

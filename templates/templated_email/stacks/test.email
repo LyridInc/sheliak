@@ -1,0 +1,7 @@
+{% block subject %}
+  Test Email!
+{% endblock %}
+
+{% block plain %}
+This is a test email!
+{% endblock %}
