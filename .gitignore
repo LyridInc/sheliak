@@ -1,0 +1,9 @@
+logs
+.coverage
+.idea
+*.pyc
+yarn.lock
+node_modules
+staticfiles
+venv
+lyrid-venv

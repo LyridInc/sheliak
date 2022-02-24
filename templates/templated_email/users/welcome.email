@@ -1,0 +1,15 @@
+{% block subject %}
+  Welcome to Example.com
+{% endblock %}
+
+{% block plain %}
+{% include 'templated_email/shared/_header.email' %}
+
+Welcome to Example.com
+
+{% include 'templated_email/shared/_footer.email' %}
+{% endblock %}
+
+{% block html %}
+{% include 'templated_email/compiled/welcome.html' %}
+{% endblock %}

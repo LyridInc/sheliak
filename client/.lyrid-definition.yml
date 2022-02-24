@@ -1,0 +1,11 @@
+name: sheliak-client
+description: Client side for sheliak
+ignoreFiles: .git .next node_modules
+modules:
+  - name: template
+    language: nodejs14.x
+    web: nextjs
+    description: Module description
+    functions:
+      - name: entry
+        description: the entry point for the function

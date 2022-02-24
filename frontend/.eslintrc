@@ -1,0 +1,51 @@
+{
+  "root": true,
+  "extends": [
+    "eslint:recommended",
+    "plugin:cypress/recommended",
+    "plugin:import/recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "plugins": [
+    "react",
+    "import",
+    "react-hooks",
+    "prettier"
+  ],
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "paths": ["src"]
+      }
+    },
+    "react": {
+      "version": "detect"
+    }
+  },
+  "rules": {
+    "react/prop-types": "warn",
+    "react/jsx-filename-extension": "off",
+    "prettier/prettier": ["warn", { "endOfLine": "auto" }],
+    "no-console": "warn",
+    "no-eval": "error",
+    "no-unused-vars": "warn",
+    "complexity": ["warn", 12]
+  },
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true,
+      "experimentalObjectRestSpread": true
+    }
+  },
+  "env": {
+    "es6": true,
+    "browser": true,
+    "node": true,
+    "mocha": true
+  }
+}

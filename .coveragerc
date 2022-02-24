@@ -1,0 +1,24 @@
+[run]
+omit =
+  *apps.py
+  *migrations*
+  *settings*
+  *tests*
+  *urls.py*
+  *wsgi.py*
+  config/*
+  frontend/*
+  fixtures/*
+  staticfiles/*
+  templates/*
+  manage.py
+  .env
+  .gitignore
+  .gitlab-ci.yml
+  DockerFile
+  package.json
+  README.md
+  requirements.txt
+
+[html]
+directory = fixtures/coverage_report
