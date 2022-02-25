@@ -3,11 +3,11 @@ distinguished_name = req_distinguished_name
 x509_extensions = v3_req
 prompt = no
 [req_distinguished_name]
-C = IN
-ST = Himachal Pradesh
-L = Una
-O = MagicLabs Inc
-OU = Staff Member
+C = US
+ST = California
+L = San Jose
+O = Lyrid Inc
+OU = Dev
 CN = www.localhost.com
 [v3_req]
 keyUsage = critical, digitalSignature, keyAgreement
