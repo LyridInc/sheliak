@@ -193,7 +193,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class UserLogin(models.Model):
     """Represent users' logins, one per record"""
 
-    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="user_logins")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_logins")
     provider = models.CharField(max_length=100, default='django.contrib.auth.backends.ModelBackend')
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     timestamp = models.DateTimeField(default=timezone.now)
