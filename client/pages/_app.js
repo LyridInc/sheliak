@@ -51,7 +51,6 @@ function App({ Component, pageProps }) {
         <>
             <Head>
                 <title>Sheliak Authentication Demo</title>
-
                 <link href="//netdna.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
             </Head>
             <div className="background_header">
@@ -70,7 +69,7 @@ function App({ Component, pageProps }) {
                     </g>
                 </svg>
             </div>
-            <div className="app-container bg-light">
+            <div className="app-container">
                 <Nav />
                 <div className="container pt-4 pb-4">
                     {authorized &&
@@ -78,7 +77,6 @@ function App({ Component, pageProps }) {
                     }
                 </div>
             </div>
-            
             <div className="background_footer">
                 <div className="text-center mt-4">
                     <p style={{ color: '#fafbff'}}>

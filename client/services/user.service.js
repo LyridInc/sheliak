@@ -19,7 +19,9 @@ export const userService = {
     logout,
     getAll,
     // Social Logins
-    twitterLogin,
+    getTwitterReqToken,
+    getTwitterAccToken,
+    socialLogin,
 };
 
 function login(email, password) {
@@ -158,8 +160,8 @@ function resetpassword(token, password1, password2){
         }
     }`
 
-    console.log(password1);
-    console.log(password2);
+    // console.log(password1);
+    // console.log(password2);
 
     const PWDUPLE = {
         token: token,
@@ -196,20 +198,90 @@ function getAll() {
 }
 
 // Social Logins
-function twitterLogin(accessToken) {
+function getTwitterReqToken() {
+    // Different flow for twitter
+    const twitterReqQuery =
+    `mutation socialAuthTwitterReq {
+        socialAuthTwitterReq {
+            authenticateUrl,
+            requestOauthToken,
+            requestOauthSecret,
+        }
+    }`;
+    try {
+        fetchWrapper.post(`${process.env.SHELIAK_URL}/graphql`, {
+            query: twitterReqQuery, variables: {}
+            }).then(data => {
+                window.location.href = data.data.socialAuthTwitterReq.authenticateUrl;
+                // console.log(data.data.socialAuthTwitterReq);
+            });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+function getTwitterAccToken(requestToken, verifier) {
+    const twitterAccQuery =
+    `mutation socialAuthTwitter($requestToken: String!, $verifier: String!) {
+        socialAuthTwitter(requestToken: $requestToken, verifier: $verifier) {
+            accessToken,
+            accessTokenSecret,
+        }
+    }`;
+    try {
+        return fetchWrapper.post(`${process.env.SHELIAK_URL}/graphql`, 
+        { 
+            query: twitterAccQuery, 
+            variables: {
+                requestToken: requestToken,
+                verifier: verifier
+            }
+        }).then(data => {
+            if (!data.data) throw new Error('Error getting access token');
+            if (!data.data.socialAuthTwitter) throw new Error('Error getting access token');
+            if (!('accessToken' in data.data.socialAuthTwitter) || !('accessTokenSecret') in data.data.socialAuthTwitter) 
+                throw new Error('Error getting access token');
+            return socialLogin('twitter', data.data.socialAuthTwitter.accessToken, data.data.socialAuthTwitter.accessTokenSecret).then(
+                data => { return data }
+            ).catch(error => { throw error; });
+        });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+function socialLogin(provider, accessToken = null, accessTokenSecret = null) {
     const query = 
     `mutation socialAuth($accessToken: String!, $provider: String!) {
         socialAuth(
             accessToken: $accessToken,
             provider: $provider,
-        )
+        ) {
+            token,
+            refreshToken
+        }
     }`;
+    let providerName;
+    if (provider === 'google') providerName = 'google-oauth2';
+    else providerName = provider;
+
     const variables = {
-        accessToken: accessToken,
-        provider: 'twitter',
+        accessToken: `${accessToken}&${accessTokenSecret}`,
+        provider: providerName,
     };
     try {
         return fetchWrapper.post(`${process.env.SHELIAK_URL}/graphql`, {query: query, variables: variables})
+        .then(data => {
+            if (data.errors) {
+                if (data.errors[0].message === "NOT_REGISTERED")
+                    throw new Error('User email not yet registered');
+                // Something went wrong with the backend
+                throw new Error('Something went wrong with the backend');
+            }
+            userSubject.next(data);
+            localStorage.setItem('user', data.data.socialAuth.token);
+            return data;
+        });
     } catch (error) {
         console.log(error);
     }

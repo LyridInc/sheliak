@@ -16,6 +16,11 @@ def psa(f):
     @wraps(f)
     def wrapper(cls, root, info, provider, access_token, **kwargs):
         strategy = load_strategy(info.context)
+        token_secret = access_token.split('&')
+        access_token = {
+            'oauth_token': token_secret[0],
+            'oauth_token_secret': token_secret[1]
+        }
 
         try:
             backend = load_backend(strategy, provider, redirect_uri=None)

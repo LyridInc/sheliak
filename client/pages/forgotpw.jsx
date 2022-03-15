@@ -21,7 +21,7 @@ function ForgotPw() {
 
     // form validation rules 
     const validationSchema = Yup.object().shape({
-        email: Yup.string().required('Email is required')
+        email: Yup.string().required('Email is required').email('Must be a valid email')
     });
     const formOptions = { resolver: yupResolver(validationSchema) };
 
@@ -33,8 +33,7 @@ function ForgotPw() {
         return userService.forgotpw(email)
             .then(() => {
                 // get return url from query parameters or default to '/'
-                const returnUrl = router.query.returnUrl || '/';
-                router.push(returnUrl);
+                router.push('/login');
             })
             .catch(error => {
                 setError('apiError', { message: error });

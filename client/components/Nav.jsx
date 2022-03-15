@@ -19,7 +19,8 @@ function Nav() {
 
     // only show nav when logged in
     if (!user) return null;
-    console.log(user);
+    if (user.errors) return null;
+    // console.log(user);
 
     return (
         <nav className="navbar navbar-expand navbar-dark bg-dark">

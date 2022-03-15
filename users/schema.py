@@ -3,7 +3,7 @@ from graphql_auth import mutations
 
 from users.queries import StatisticsQuery, UserQuery
 from users.mutations import (
-    SocialAuthJWT, GithubAccessToken, SendWelcomeEmail, PasswordSetAdmin, UserRegisterAdmin, UserPatchAdmin, UserPatch
+    TwitterAccessToken, TwitterRequestToken, SocialAuthJWT, GithubAccessToken, SendWelcomeEmail, PasswordSetAdmin, UserRegisterAdmin, UserPatchAdmin, UserPatch
 )
 
 
@@ -38,6 +38,8 @@ class Mutation(graphene.ObjectType):
     # Social
     social_auth = SocialAuthJWT.Field()
     social_auth_github = GithubAccessToken.Field()
+    social_auth_twitter_req = TwitterRequestToken.Field()
+    social_auth_twitter = TwitterAccessToken.Field()
 
     # custom
     send_welcome_email = SendWelcomeEmail.Field()

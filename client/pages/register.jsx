@@ -29,6 +29,7 @@ function Register() {
         firstName: Yup.string().required('First Name is required'),
         lastName: Yup.string().required('Last Name is required'),
         password: Yup.string().required('Password is required')
+            .min(8, "Password is too short - 8 characters minimum")
     });
     const formOptions = { resolver: yupResolver(validationSchema) };
 

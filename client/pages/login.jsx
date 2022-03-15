@@ -4,14 +4,17 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 
-import { userService } from 'services';
 import Link from 'next/link';
+import SocialButton from 'components/Buttons/SocialButton';
+import { userService } from "services";
+import { handleTwitterUri, handleMailUri } from 'helpers/uri-parser';
 
 export default Login;
 
 function Login() {
     const router = useRouter();
     const [loginError, setLoginError] = useState(false);
+    const [socialLoginError, setSocialLoginError] = useState(null);
 
     // State doesn't work: [Error in _app.js] too many state rendered, currently using a bool flag
     // const [passwordResetToken, setpasswordResetToken] = useState(false);
@@ -20,21 +23,24 @@ function Login() {
     // reset -> activate = false
     // registration -> activate = true
     let activate = false;
+    // flag to check if we are dealing with a twitter callback url
+    let twitter = false;
     
     // obtain token from password reset - Jank-Style * Encode/Decode doesn't work *
     // will try to make into api
     try{
         activate = window.location.href.includes('activate');
-        let url_truncate = window.location.href.split("%2F");
-        if(url_truncate[2] != null){
-            let final_token = url_truncate[2].replace("%3A", ":").replace("%3A", ":");
-            // console.log(final_token);
-            localStorage.setItem('reset_token', String(final_token));
-            // setpasswordResetToken(true);
-            token_flag = true;
-        }
-        if(url_truncate[2] == null){
-            localStorage.removeItem('reset_token');
+        twitter = window.location.href.includes('twitter-auth');
+        if (twitter) {
+            handleTwitterUri(window.location.href, router).catch(error => {
+                router.replace(`/login?social-error=${error.message}`, undefined, {shallow: true});
+            });
+        } else {
+            let final_token = handleMailUri(window.location.href);
+            if (final_token) {
+                localStorage.setItem('reset_token', String(final_token));
+                token_flag = true;
+            } else localStorage.removeItem('reset_token');
         }
     }
     catch(e){
@@ -50,8 +56,12 @@ function Login() {
         // redirect if password reset token is detected or login if we are at forgot password
         else if(token_flag == true) {
             if (activate) router.push('/login');
+            else if (twitterAcc) router.push('/');
             else router.push('/reset');
         }
+        // checks if social auth returns an error
+        if (window.location.href.includes('social-error')) 
+            setSocialLoginError(window.location.href.split('=')[1]);
     }, []);
 
     // form validation rules 
@@ -81,14 +91,29 @@ function Login() {
     function onClick() {
         // navigate back to login page
         setLoginError(false);
+        setSocialLoginError(null);
     }
 
-    // the element to display for when error
+    // the element to display for when error with login
     const errorElement = 
     <div className='col-md-6 offset-md-3 mt-5'>
         <div className='card'>
             <h4 className="card-header">Invalid Login</h4>
             <div className='card-body'>
+                <button onClick={onClick} className='btn btn-primary'>
+                    Try again
+                </button>
+            </div>
+        </div>
+    </div>;
+
+    // the element to display for when social login error
+    const socialErrorElement =
+    <div className='col-md-6 offset-md-3 mt-5'>
+        <div className='card'>
+            <h4 className="card-header">Invalid Login</h4>
+            <div className='card-body'>
+                <h6>{socialLoginError && socialLoginError.replaceAll('%20', ' ')}</h6>
                 <button onClick={onClick} className='btn btn-primary'>
                     Try again
                 </button>
@@ -124,6 +149,38 @@ function Login() {
             </div>
         </div>
         <div className="card">
+            <div className='card-body'>
+                {/* <SocialButton
+                    btn="fb"
+                    provider='facebook'
+                    version="v9.0"
+                    appId={process.env.FACEBOOK_APP_ID}
+                    // onLoginSuccess={handleSocialLogin}
+                    // onLoginFailure={handleSocialLoginFailure}
+                />
+                <SocialButton
+                    btn="google"
+                    provider='google'
+                    appId={process.env.GOOGLE_APP_ID}
+                    // onLoginSuccess={handleSocialLogin}
+                    // onLoginFailure={handleSocialLoginFailure}
+                />
+                <SocialButton
+                    btn="github"
+                    provider='github'
+                    appId={process.env.GITHUB_APP_ID}
+                    // onLoginSuccess={handleSocialLogin}
+                    // onLoginFailure={handleSocialLoginFailure}
+                    // key={'git_' + key.toString()}
+                    // gatekeeper={sheliakcallback}
+                    // redirect={githubcallback}
+                /> */}
+                <SocialButton
+                    btn="twitter"
+                />
+            </div>
+        </div>
+        <div className="card">
             <div className="card-body">
                 <button className="btn btn-primary">
                     <Link href="/register" style={{ textDecoration: 'none' }}>
@@ -132,7 +189,6 @@ function Login() {
                         </a>
                     </Link>
                 </button>
-                
                 <button className="btn btn-primary" style={{ margin: '5px' }}>
                     <Link href="/forgotpw" style={{ textDecoration: 'none' }}>
                         <a className='link-color' style={{ textDecoration: 'none' }}>
@@ -144,5 +200,5 @@ function Login() {
         </div>
     </div>;
 
-    return (loginError ? errorElement : loginForm);
+    return (socialLoginError ? socialErrorElement : loginError ? errorElement : loginForm);
 }

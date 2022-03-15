@@ -1,6 +1,6 @@
 name: sheliak-server
 description: This is a Lyrid application to create a authentication services
-ignoreFiles: .git venv node_modules .idea __pycache__ client
+ignoreFiles: .git lyrid-venv node_modules .idea __pycache__ client .github staticfiles
 modules:
 - name: src
   language: python3.9
