@@ -13,16 +13,24 @@ const SESForm = ({ register, errors }) => {
 				</Typography>
 			</Grid>
 			<Grid item xs={12} sm={6}>
-				{renderTextField(register, errors, 'awsAccessKeyId', 'settings.form.field.aws_access_key_id')}
+				{renderTextField(register, errors, 'awsAccessKeyId', 'settings.form.field.aws_access_key_id', {
+					required: true,
+				})}
 			</Grid>
 			<Grid item xs={12} sm={6}>
-				{renderTextField(register, errors, 'awsSecretAccessKey', 'settings.form.field.aws_secret_access_key')}
+				{renderTextField(register, errors, 'awsSecretAccessKey', 'settings.form.field.aws_secret_access_key', {
+					required: true,
+				})}
 			</Grid>
 			<Grid item xs={12} sm={6}>
-				{renderTextField(register, errors, 'awsSesRegionEndpoint', 'settings.form.field.aws_ses_region_endpoint')}
+				{renderTextField(register, errors, 'awsSesRegionEndpoint', 'settings.form.field.aws_ses_region_endpoint', {
+					required: true,
+				})}
 			</Grid>
 			<Grid item xs={12} sm={6}>
-				{renderTextField(register, errors, 'awsSesRegionName', 'settings.form.field.aws_ses_region_name')}
+				{renderTextField(register, errors, 'awsSesRegionName', 'settings.form.field.aws_ses_region_name', {
+					required: true,
+				})}
 			</Grid>
 			<Grid item xs={12} sm={6}>
 				{renderTextField(register, errors, 'awsSesAutoThrottle', 'settings.form.field.aws_ses_auto_throttle')}

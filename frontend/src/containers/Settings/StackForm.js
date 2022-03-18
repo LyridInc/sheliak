@@ -31,10 +31,10 @@ const StackForm = ({ intl }) => {
 	};
 
 	const sesSchema = {
-		awsAccessKeyId: yup.string(),
-		awsSecretAccessKey: yup.string(),
-		awsSesRegionEndpoint: yup.string(),
-		awsSesRegionName: yup.string(),
+		awsAccessKeyId: yup.string().required(),
+		awsSecretAccessKey: yup.string().required(),
+		awsSesRegionEndpoint: yup.string().required(),
+		awsSesRegionName: yup.string().required(),
 		awsSesAutoThrottle: yup
 			.number()
 			.test('is-decimal', 'invalid decimal', (value) => (value + '').match(/^\d*\.{1}\d*$/))
@@ -52,13 +52,10 @@ const StackForm = ({ intl }) => {
 	};
 
 	const smtpSchema = {
-		host: yup.string(),
-		port: yup
-			.number()
-			.nullable(true)
-			.transform((_, val) => (val === Number(val) ? val : null)),
-		username: yup.string(),
-		password: yup.string(),
+		host: yup.string().required(),
+		port: yup.number().required().nullable(),
+		username: yup.string().required(),
+		password: yup.string().required(),
 		useTls: yup.boolean().default(false),
 		useSsl: yup.boolean().default(false),
 		timeout: yup
