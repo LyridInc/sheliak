@@ -155,6 +155,9 @@ const UserProfile = ({ intl }) => {
 								personalInformationErrors,
 								'firstName',
 								'users.create.form.from_firstName',
+								{
+									required: true,
+								},
 							)}
 						</Grid>
 						<Grid item xs={12} sm={6}>
@@ -179,7 +182,10 @@ const UserProfile = ({ intl }) => {
 								personalInformationErrors,
 								'email',
 								'users.create.form.field.email',
-								'email',
+								{
+									type: 'email',
+									required: true,
+								},
 							)}
 						</Grid>
 						<Grid item xs={12} sm={6}>
@@ -270,6 +276,9 @@ const UserProfile = ({ intl }) => {
 						</Grid>
 						<Grid item xs={12} sm={2}>
 							{renderSwitch(personalInformationRegister, control, 'isSuperuser', 'users.create.form.field.is_superuser')}
+						</Grid>
+						<Grid item xs={12} sm={2}>
+							{renderSwitch(personalInformationRegister, control, 'isActive', 'users.create.form.field.is_active')}
 						</Grid>
 					</Grid>
 

@@ -13,16 +13,26 @@ const SMTPForm = ({ register, errors, control }) => {
 				</Typography>
 			</Grid>
 			<Grid item xs={12} sm={6}>
-				{renderTextField(register, errors, 'host', 'settings.form.field.host')}
+				{renderTextField(register, errors, 'host', 'settings.form.field.host', {
+					required: true,
+				})}
 			</Grid>
 			<Grid item xs={12} sm={6}>
-				{renderTextField(register, errors, 'port', 'settings.form.field.port')}
+				{renderTextField(register, errors, 'port', 'settings.form.field.port', {
+					type: 'number',
+					required: true,
+				})}
 			</Grid>
 			<Grid item xs={12} sm={6}>
-				{renderTextField(register, errors, 'username', 'settings.form.field.username')}
+				{renderTextField(register, errors, 'username', 'settings.form.field.username', {
+					required: true,
+				})}
 			</Grid>
 			<Grid item xs={12} sm={6}>
-				{renderTextField(register, errors, 'password', 'settings.form.field.password', 'password')}
+				{renderTextField(register, errors, 'password', 'settings.form.field.password', {
+					type: 'password',
+					required: true,
+				})}
 			</Grid>
 			<Grid item xs={12} sm={6}>
 				{renderTextField(register, errors, 'timeout', 'settings.form.field.timeout')}

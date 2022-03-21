@@ -33,6 +33,7 @@ const DataTable = (props) => {
 		selectableRows,
 		title,
 		titleBar,
+		triggerRefresh,
 	} = props;
 
 	const history = useHistory();
@@ -49,6 +50,11 @@ const DataTable = (props) => {
 	const [cols, setCols] = useState(columns);
 	const [searchText, setSearchText] = useState('');
 	const [deleteWarningConsent, setDeleteWarningConsent] = useState({ open: false, items: null });
+	const [refreshState, setRefreshState] = useState(0);
+
+	if (refreshState !== triggerRefresh) {
+		setRefreshState(triggerRefresh);
+	}
 
 	const [getItems, { loading }] = useLazyQuery(query, {
 		onCompleted: (data) => {
@@ -103,7 +109,7 @@ const DataTable = (props) => {
 				...queryVariables,
 			},
 		});
-	}, [getItems, queryVariables]);
+	}, [getItems, queryVariables, refreshState]);
 
 	const handleNew = () => {
 		history.push(addRoute);
@@ -300,6 +306,7 @@ DataTable.propTypes = {
 	deleteItemByKey: PropTypes.string,
 	selectableRows: PropTypes.string,
 	search: PropTypes.bool,
+	triggerRefresh: PropTypes.number,
 };
 
 export default DataTable;

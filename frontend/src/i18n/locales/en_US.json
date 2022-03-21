@@ -35,6 +35,11 @@
 
 	"users.list.title": "Users",
 	"users.list.titleBar": "List of Users",
+	"users.list.consent.activation.header": "User Activation Status",
+	"users.list.consent.activation.warning_text.deactivate": "Are you sure you want to deactivate this user?",
+	"users.list.consent.activation.warning_text.activate": "Are you sure you want to activate this user?",
+	"users.list.consent.deletion.header": "User Deletion",
+	"users.list.consent.deletion.warning_text": "Are you sure you want to delete this user?",
 
 	"datatable.filters.button.submit": "Apply",
 	"users.create.form.from_firstName.label": "First Name",
@@ -61,6 +66,7 @@
 	"users.create.form.field.email.placeholder": "enter your email",
 	"users.create.form.field.is_staff.label": "Is Staff?",
 	"users.create.form.field.is_superuser.label": "Is Superuser?",
+	"users.create.form.field.is_active.label": "Is Active?",
 	"users.create.form.field.active.label": "Is Active?",
 	"users.create.form.field.new_password.label": "Password",
 	"users.create.form.field.new_password.placeholder": "enter password",

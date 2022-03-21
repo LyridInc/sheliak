@@ -60,7 +60,41 @@ const REGIS_ADMIN = gql`
 	}
 `;
 
+const TOGGLE_USER_ACTIVATION = gql`
+	mutation updateAccountAdmin($id: ID!, $isActive: Boolean!) {
+		updateAccountAdmin(id: $id, input: { isActive: $isActive }) {
+			success
+			errors
+			user {
+				email
+				firstName
+				id
+				isStaff
+				isSuperuser
+				isActive
+				lastName
+				mobileNumber
+				profile {
+					id
+					gender
+					dateOfBirth
+					timezone
+					created
+					modified
+					picture
+					nationality
+					address
+					inviteCode
+					company
+					legacyId
+				}
+			}
+		}
+	}
+`;
+
 export const UsersMutation = {
 	CHANGE_PASSWORD,
 	REGIS_ADMIN,
+	TOGGLE_USER_ACTIVATION,
 };
