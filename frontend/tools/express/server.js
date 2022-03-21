@@ -24,6 +24,8 @@ app.get('*', function (req, res) {
 	res.sendFile(path.join(__dirname, '../../build/index.html'));
 });
 
+
+// Please generate your own certificate prior to running HTTPS-mode
 const key = fs.readFileSync('tools/express/ssl/cert.key');
 const cert = fs.readFileSync('tools/express/ssl/cert.pem');
 const server = https.createServer({ key: key, cert: cert }, app);
