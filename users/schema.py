@@ -3,7 +3,7 @@ from graphql_auth import mutations
 
 from users.queries import StatisticsQuery, UserQuery
 from users.mutations import (
-    SocialAuthJWT, GithubAccessToken, SendWelcomeEmail, PasswordSetAdmin, UserRegisterAdmin, UserPatchAdmin, UserPatch
+    SocialAuthJWT, GithubAccessToken, SendWelcomeEmail, PasswordSetAdmin, UserRegisterAdmin, UserPatchAdmin, UserPatch, DeleteUserAdmin
 )
 
 
@@ -47,3 +47,4 @@ class Mutation(graphene.ObjectType):
     password_set_admin = PasswordSetAdmin.Field()
     register_admin = UserRegisterAdmin.Field()
     update_account_admin = UserPatchAdmin.Field()
+    delete_account_admin = DeleteUserAdmin.Field()

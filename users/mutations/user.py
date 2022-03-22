@@ -2,8 +2,11 @@ import graphene
 from django.contrib.auth import get_user_model
 from graphql_auth.bases import MutationMixin
 from django.utils.translation import gettext as _
+from graphene_django_cud.util import disambiguate_id
 from graphql_jwt.decorators import staff_member_required, login_required
-from graphene_django_cud.mutations import DjangoCreateMutation, DjangoPatchMutation
+from graphene_django_cud.mutations import DjangoCreateMutation, DjangoPatchMutation, DjangoDeleteMutation
+
+from users.models import UserLogin
 
 User = get_user_model()
 
@@ -71,3 +74,18 @@ class UserPatchAdmin(DjangoPatchMutation, MutationMixin):
     @staff_member_required
     def mutate(cls, root, info, input, id):
         return super().mutate(root, info, input, id)
+
+
+class DeleteUserAdmin(DjangoDeleteMutation, MutationMixin):
+    """
+    Delete User by admin form
+    """
+
+    class Meta:
+        model = User
+
+    @classmethod
+    @staff_member_required
+    def mutate(cls, root, info, id):
+        UserLogin.objects.filter(user__id=disambiguate_id(id)).delete()
+        return super().mutate(root, info, id)
