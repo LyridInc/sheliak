@@ -4,15 +4,17 @@ import { FormattedMessage } from 'react-intl';
 import { Controller } from 'react-hook-form';
 import Autocomplete from '@mui/material/Autocomplete';
 
-const renderTextField = (register, errors, fieldName, intlPrefix, type = 'text') => {
-	const { ref: fieldRef, ...fieldInputProps } = register(fieldName);
+const renderTextField = (register, errors, fieldName, intlPrefix, options = { type: 'text', required: false }) => {
+	const { ref: fieldRef, ...fieldInputProps } = register(fieldName, {
+		required: options.required,
+	});
 
 	return (
 		<FormattedMessage id={`${intlPrefix}.placeholder`}>
 			{(placeholder) => (
 				<TextField
 					{...fieldInputProps}
-					type={type}
+					type={options.type}
 					label={<FormattedMessage id={`${intlPrefix}.label`} />}
 					variant="standard"
 					inputRef={fieldRef}
@@ -23,6 +25,7 @@ const renderTextField = (register, errors, fieldName, intlPrefix, type = 'text')
 					helperText={errors[fieldName] ? errors[fieldName].message : ''}
 					placeholder={placeholder[0]}
 					fullWidth
+					required={options.required}
 				/>
 			)}
 		</FormattedMessage>

@@ -67,10 +67,14 @@ const UserManagePassword = ({ intl, user }) => {
 			<form onSubmit={handleSubmit(onSubmitChangePassword)} autoComplete="off">
 				<Grid container spacing={2}>
 					<Grid item xs={12} sm={12}>
-						{renderTextField(register, errors, 'newPassword', 'users.manage.form.field.new_password', 'password')}
+						{renderTextField(register, errors, 'newPassword', 'users.manage.form.field.new_password', {
+							type: 'password',
+						})}
 					</Grid>
 					<Grid item xs={12} sm={12}>
-						{renderTextField(register, errors, 'confirmPassword', 'users.manage.form.field.confirm_password', 'password')}
+						{renderTextField(register, errors, 'confirmPassword', 'users.manage.form.field.confirm_password', {
+							type: 'password',
+						})}
 					</Grid>
 				</Grid>
 

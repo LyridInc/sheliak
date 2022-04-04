@@ -87,19 +87,17 @@ const UserCreate = ({ intl }) => {
 			<form onSubmit={createUserSubmitHandler(onCreateUserSubmit)}>
 				<Grid container spacing={2}>
 					<Grid item xs={12} sm={6}>
-						{renderTextField(createUserRegister, createUserErrors, 'email', 'users.create.form.field.email', 'email')}
+						{renderTextField(createUserRegister, createUserErrors, 'email', 'users.create.form.field.email', {
+							type: 'email',
+						})}
 					</Grid>
 					<Grid item xs={12} sm={6}>
 						{renderTextField(createUserRegister, createUserErrors, 'firstName', 'users.create.form.from_firstName')}
 					</Grid>
 					<Grid item xs={12} sm={6}>
-						{renderTextField(
-							createUserRegister,
-							createUserErrors,
-							'password',
-							'users.create.form.field.new_password',
-							'password',
-						)}
+						{renderTextField(createUserRegister, createUserErrors, 'password', 'users.create.form.field.new_password', {
+							type: 'password',
+						})}
 					</Grid>
 					<Grid item xs={12} sm={6}>
 						{renderTextField(createUserRegister, createUserErrors, 'mobileNumber', 'users.create.form.from_mobileNumber')}
