@@ -1,2 +1,4 @@
 .next
+.vscode
+/out
 node_modules

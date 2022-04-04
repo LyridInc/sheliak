@@ -186,6 +186,8 @@ type Mutation {
     "Social Auth for JSON Web Token (JWT)"
     socialAuth(accessToken: String!, provider: String!): SocialAuthJWT
     socialAuthGithub(code: String!): GithubAccessToken
+    socialAuthTwitterReq(): TwitterRequestToken
+    socialAuthTwitter(requestToken: String!, verifier: String!): TwitterAccessToken
     """
 
     Obtain JSON web token for given user.
@@ -412,6 +414,11 @@ type SendWelcomeEmail {
 }
 
 "Social Auth for JSON Web Token (JWT)"
+type TwitterAccessToken {
+    accessToken: String
+    accessTokenSecret: String
+}
+
 type SocialAuthJWT {
     refreshToken: String
     social: SocialType

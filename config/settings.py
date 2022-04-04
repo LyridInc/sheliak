@@ -146,6 +146,7 @@ SOCIAL_AUTH_GITHUB_SCOPE = ['user:email']
 
 SOCIAL_AUTH_TWITTER_KEY = os.environ.get("TWITTER_APP_ID")
 SOCIAL_AUTH_TWITTER_SECRET = os.environ.get("TWITTER_APP_SECRET")
+SOCIAL_AUTH_TWITTER_CALLBACK = os.environ.get("TWITTER_APP_CALLBACK")
 
 # Since graphql_auth support only graphql_jwt v0.3.0, this is a workaround for public, private key.
 # Process to generate RS256 Keys

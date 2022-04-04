@@ -8,10 +8,14 @@ module.exports = {
             : 'http://localhost:3000/api' // production api
     },
     env: {
+        CLIENT_URL:
+            process.env.NODE_ENV === 'development'
+            ? 'http://localhost:3000' // sheliak-client dev url
+            : 'http://localhost:3000', // sheliak-client production url
         SHELIAK_URL:
             process.env.NODE_ENV === 'development'
             ? 'http://localhost:8000' // sheliak dev api url
-            : 'http://localhost:8000' // sheliak production api url
+            : 'http://localhost:8000', // sheliak production api url
     },
     module: {
         rules: [
