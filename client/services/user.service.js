@@ -266,7 +266,7 @@ function socialLogin(provider, accessToken = null, accessTokenSecret = null) {
     else providerName = provider;
 
     const variables = {
-        accessToken: `${accessToken}&${accessTokenSecret}`,
+        accessToken: `${accessToken}\n${accessTokenSecret}`,
         provider: providerName,
     };
     try {
