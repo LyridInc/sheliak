@@ -7,7 +7,7 @@ from graphql_auth.models import UserStatus
 from social_django.models import UserSocialAuth
 
 from users.models import Profile
-from users.emails import force_user_to_reset_password
+from users.emails import force_user_to_reset_password, force_user_to_reset_password_security_update
 
 User = get_user_model()
 
@@ -81,7 +81,7 @@ class CustomUserAdmin(UserAdmin):
 
     ordering = ('-date_joined',)
     empty_value_display = '-'
-    actions = ('send_force_password_set_email', )
+    actions = ('send_force_password_set_email', 'send_force_password_set_email_security_update')
     search_fields = ('first_name', 'middle_name', 'last_name', 'email', )
     readonly_fields = ('last_login', 'date_joined', 'modified')
     list_display = ('email', 'get_full_name', 'is_staff', 'date_joined', 'last_login' )
@@ -109,6 +109,23 @@ class CustomUserAdmin(UserAdmin):
         self.message_user(request, 'Force password reset email sent to %(count)d %(items)s.' %
                           {'count': n, 'items': model_ngettext(self.opts, n)}, messages.SUCCESS)
     send_force_password_set_email.short_description = 'Force user to reset their password'
+
+    def send_force_password_set_email_security_update(self, request, queryset):
+        """
+        Sends an email to force the user to reset their passwords due to security updates.
+        THIS WILL MAKE CURRENT PASSWORD AS UNUSABLE.
+        """
+        n = 0
+        for user in queryset:
+            user.set_unusable_password()
+            user.save()
+            force_user_to_reset_password_security_update(user)
+            n += 1
+
+        self.message_user(request, 'Force password reset email (security update) sent to %(count)d %(items)s.' %
+                          {'count': n, 'items': model_ngettext(self.opts, n)}, messages.SUCCESS)
+    send_force_password_set_email_security_update.short_description = '[Security Update] Force user to reset their ' \
+                                                                      'password'
 
 
 admin.site.register(User, CustomUserAdmin)

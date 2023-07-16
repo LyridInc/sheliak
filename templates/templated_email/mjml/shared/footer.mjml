@@ -1,0 +1,28 @@
+<mj-section background-color="#673ab7" padding="20px">
+  <mj-column vertical-align="bottom">
+    <mj-text align="left" color="#fff" font-size="16px" font-family="Lato, Helvetica, Arial, sans-serif" padding="10px 25px">Sincerely, <br /><br />{{ company_name }} Team</mj-text>
+  </mj-column>
+
+  <mj-column vertical-align="bottom">
+    <mj-text align="right" color="#fff" font-size="14px" font-family="Lato, Helvetica, Arial, sans-serif" padding="10px 25px">
+        Serverless Multi-Cloud Platform <br /><br />
+                99 S Almaden Blvd<br />
+                Suite 600<br />
+                San Jose, CA 95113
+    </mj-text>
+  </mj-column>
+</mj-section>
+<mj-section>
+    <mj-column>
+        <mj-text align="center" padding="5px">
+        <a href="https://docs.lyrid.io">Documentations</a> | <a href="https://api.lyrid.io/slack">Slack</a> | <a href="https://lyrid.io/terms-of-use">Terms of Use<a> | <a href="https://lyrid.io/privacy">Privacy Notice<a>
+        </mj-text>
+    </mj-column>
+</mj-section>
+<mj-section>
+    <mj-column>
+        <mj-text align="center" padding="5px">
+        This is an automatically generated e-mail, please do not reply.
+        </mj-text>
+    </mj-column>
+</mj-section>

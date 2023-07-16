@@ -1,0 +1,5 @@
+  <mj-section background-color="#673ab7" padding="30px 0">
+   <mj-column >
+    <mj-image src="https://storage.googleapis.com/zeta-d1/images/logo.png" alt="logo" width="150px" padding="10px 0"></mj-image>
+   </mj-column>
+  </mj-section>

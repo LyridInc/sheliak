@@ -1,0 +1,18 @@
+<mjml>
+  <mj-body>
+    <mj-include path="./shared/header.mjml" />
+    <mj-include path="./shared/logo.mjml" />
+    <mj-section background-color="#ffffff" padding-top="20px" padding-bottom="20px">
+      <mj-column width="100%">
+        <mj-text font-size="20px" font-family="Lato, Helvetica, Arial, sans-serif" padding="10px 25px">Hi <strong>{{ user.get_full_name }}</strong>!
+            <br /><br />
+          	Welcome to Lyrid!
+            <br /><br />
+            This is a test email!
+          <br /><br />
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-include path="./shared/footer.mjml" />
+  </mj-body>
+</mjml>

@@ -2,6 +2,8 @@ import graphene
 from graphene_django.debug import DjangoDebug
 from users.schema import Mutation as AuthMutation, Query as AuthQuery
 from stacks.schema import Mutation as StackMutation, Query as StackQuery
+from helpers.timezones import TimezoneQuery
+from helpers.nationalities import NationalityQuery
 
 
 class DebugQuery(graphene.ObjectType):
@@ -12,6 +14,8 @@ class DebugQuery(graphene.ObjectType):
 class Query(
     AuthQuery,
     StackQuery,
+    TimezoneQuery,
+    NationalityQuery,
     DebugQuery,
     graphene.ObjectType
 ):

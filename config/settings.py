@@ -5,6 +5,26 @@ from datetime import timedelta
 from corsheaders.defaults import default_headers
 from django.core.management.utils import get_random_secret_key
 
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
+sentry_sdk.init(
+    dsn=os.environ.get("SENTRY_KEY"),
+    environment=os.environ.get("SENTRY_ENVIRONMENT"),
+    integrations=[
+        DjangoIntegration(),
+    ],
+
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    traces_sample_rate=1.0,
+
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True
+)
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY")
 if not SECRET_KEY:
@@ -125,6 +145,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_uid',
     'social_core.pipeline.social_auth.auth_allowed',
     'social_core.pipeline.social_auth.social_user',
+    'users.pipelines.social_auth.uid_check',
     'social_core.pipeline.social_auth.associate_by_email',
     'social_core.pipeline.social_auth.associate_user',
     'social_core.pipeline.social_auth.load_extra_data',
@@ -190,7 +211,9 @@ EMAIL_BACKEND = 'stacks.backends.StackEmailBackend'
 EMAIL_TEMPLATE_ACTIVATION = 'users/activation'
 EMAIL_TEMPLATE_PASSWORD_RESET = 'users/password_reset'
 EMAIL_TEMPLATE_PASSWORD_SET = 'users/password_set'
+EMAIL_TEMPLATE_FORCE_PASSWORD_RESET_SECURITY_UPDATE = 'users/force_password_reset_security_update'
 EMAIL_TEMPLATE_WELCOME = 'users/welcome'
+EMAIL_TEMPLATE_TEST_EMAIL = 'stacks/test'
 GRAPHQL_AUTH = {
     'LOGIN_ALLOWED_FIELDS': ['email'],
     'REGISTER_MUTATION_FIELDS': ["email", "first_name"],
@@ -217,8 +240,8 @@ GRAPHQL_AUTH = {
     'EMAIL_TEMPLATE_PASSWORD_RESET': EMAIL_TEMPLATE_PASSWORD_RESET,
     'EMAIL_TEMPLATE_PASSWORD_SET': EMAIL_TEMPLATE_PASSWORD_SET,
 
-    'PASSWORD_RESET_PATH_ON_EMAIL': 'reset',
-    'PASSWORD_SET_PATH_ON_EMAIL': 'set',
+    'PASSWORD_RESET_PATH_ON_EMAIL': 'password/reset',
+    'PASSWORD_SET_PATH_ON_EMAIL': 'password/set',
 }
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True

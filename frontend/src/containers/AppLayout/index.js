@@ -1,10 +1,10 @@
 import React, { useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { LocalizationProvider } from '@mui/lab';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
 import { useToasts } from 'react-toast-notifications';
 import { useReactiveVar } from '@apollo/client';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
 import { isLoggedInVar } from 'store/cache';
 import { setUseToastsHook } from 'store/Links/errorLink';

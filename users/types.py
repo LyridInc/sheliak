@@ -16,6 +16,11 @@ class ProfileType(DjangoObjectType):
     class Meta:
         model = Profile
 
+    gender = graphene.String()
+
+    def resolve_gender(self, info):
+        return self.get_gender()
+
 
 class UserAdminType(DjangoObjectType):
     class Meta:
@@ -83,16 +88,27 @@ class StatisticsType(graphene.ObjectType):
     superuser = graphene.Int()
     staff = graphene.Int()
     never_login = graphene.Int()
+    active_users = graphene.Int()
 
 
 class StatisticsTrendsType(graphene.ObjectType):
-    percent_total = graphene.Float()
-    percent_verified = graphene.Float()
+    percentage_change_joined = graphene.Float()
+    percentage_change_verified = graphene.Float()
+    percentage_change_logins = graphene.Float()
+
+
+class Top10Logins(graphene.ObjectType):
+    user = graphene.Field(UserType)
+    logins = graphene.Int()
+
+    def resolve_user(self, info):
+        return self
 
 
 class AccountStatisticsType(StatisticsType, graphene.ObjectType):
-    last_90_days = graphene.Field(StatisticsType)
-    last_7_days_trends = graphene.Field(StatisticsTrendsType)
+    last_x_days = graphene.Field(StatisticsType)
+    trends_in_percent = graphene.Field(StatisticsTrendsType)
+    top_10_logins = graphene.List(Top10Logins)
 
 
 class LoginStatisticsType(DjangoObjectType):
@@ -107,3 +123,13 @@ class LoginStatisticsType(DjangoObjectType):
     google = graphene.Int()
     facebook = graphene.Int()
     django = graphene.Int()
+
+
+class UserGrowthStatisticsType(graphene.ObjectType):
+    date = graphene.DateTime()
+    total_users = graphene.Int()
+    total_verified_users = graphene.Int()
+    total_unverified_users = graphene.Int()
+    new_users = graphene.Int()
+    new_verified_users = graphene.Int()
+    new_unverified_users = graphene.Int()

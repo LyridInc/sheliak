@@ -16,6 +16,10 @@ def getversion(request):
     return HttpResponse(os.environ.get("DOCKER_TAG"))
 
 
+def trigger_error(request):
+    division_by_zero = 1 / 0
+
+
 urlpatterns = [
     path("graphql", csrf_exempt(GraphQLView.as_view(graphiql=True)), name="graphql"),
 ]
@@ -24,11 +28,11 @@ urlpatterns = [
 if settings.MODE != 'PROD':
     urlpatterns += [
         path(r'admin/', admin.site.urls),
-        re_path(r"^$", never_cache(TemplateView.as_view(template_name='index.html'))),
-        re_path(r"^(?:.*)/?$", never_cache(TemplateView.as_view(template_name='index.html'))),
     ]
 
-# This URL is a catch all URL if nothing matches above.
+# This URL is a catch-all URL if nothing matches above.
 urlpatterns += [
     re_path('version', getversion),
+    re_path(r"^$", never_cache(TemplateView.as_view(template_name='index.html'))),
+    re_path(r"^(?:.*)/?$", never_cache(TemplateView.as_view(template_name='index.html'))),
 ]

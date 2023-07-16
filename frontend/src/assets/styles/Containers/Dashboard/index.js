@@ -24,6 +24,7 @@ const useDashboardStyles = makeStyles((theme) => ({
 
 	userStatsCardContent: {
 		padding: `${theme.spacing(0)} !important`,
+		whiteSpace: 'nowrap',
 	},
 }));
 

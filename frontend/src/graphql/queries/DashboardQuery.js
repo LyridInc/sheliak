@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 const GET_ACCOUNT_STATISTICS = gql`
-	query getAccountStatistics {
-		accountStatistics {
+	query getAccountStatistics($dateStart: Date!, $dateEnd: Date!) {
+		accountStatistics(dateStart: $dateStart, dateEnd: $dateEnd) {
 			total
 			verified
 			unverified
@@ -10,13 +10,25 @@ const GET_ACCOUNT_STATISTICS = gql`
 			superuser
 			staff
 			neverLogin
-			last90Days {
+			activeUsers
+			lastXDays {
 				total
 				verified
+				activeUsers
 			}
-			last7DaysTrends {
-				percentTotal
-				percentVerified
+			trendsInPercent {
+				percentageChangeJoined
+				percentageChangeVerified
+				percentageChangeLogins
+			}
+			top10Logins {
+				user {
+					pk
+					email
+					fullName
+					isSuperuser
+				}
+				logins
 			}
 		}
 	}
@@ -46,7 +58,22 @@ const GET_LOGIN_STATISTICS = gql`
 	}
 `;
 
+const GET_USER_GROWTH_STATISTICS = gql`
+	query getUserGrowthStatistics($dateStart: Date!, $dateEnd: Date!) {
+		userGrowthStatistics(dateStart: $dateStart, dateEnd: $dateEnd) {
+			date
+			totalUsers
+			totalVerifiedUsers
+			totalUnverifiedUsers
+			newUsers
+			newVerifiedUsers
+			newUnverifiedUsers
+		}
+	}
+`;
+
 export const DashboardQuery = {
 	GET_ACCOUNT_STATISTICS,
 	GET_LOGIN_STATISTICS,
+	GET_USER_GROWTH_STATISTICS,
 };

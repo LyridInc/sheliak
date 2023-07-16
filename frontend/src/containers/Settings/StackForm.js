@@ -37,8 +37,8 @@ const StackForm = ({ intl }) => {
 		awsSesRegionName: yup.string().required(),
 		awsSesAutoThrottle: yup
 			.number()
-			.test('is-decimal', 'invalid decimal', (value) => (value + '').match(/^\d*\.{1}\d*$/))
-			.nullable(true),
+			.nullable(true)
+			.transform((_, val) => (val === Number(val) ? val : null)),
 		awsSesConfig: yup.string(),
 		dkimDomain: yup.string(),
 		dkimKey: yup.string(),
@@ -98,6 +98,7 @@ const StackForm = ({ intl }) => {
 				let errors = [{ message: intl.formatMessage({ id: 'settings.create.response.error' }) }];
 				if (response.success) {
 					addToast(intl.formatMessage({ id: 'settings.create.response.success' }), { appearance: 'success' });
+					setMode('Update');
 				} else {
 					if (response.errors && response.errors.length > 0) {
 						errorHandler(response.errors[0]);
@@ -205,15 +206,15 @@ const StackForm = ({ intl }) => {
 
 		coreKeys.forEach((key) => (finalizedData[key] = data[key]));
 		sesKeys.forEach((key) => {
-			if (key == 'awsSesAutoThrottle') {
+			if (key === 'awsSesAutoThrottle') {
 				return (finalizedData[key] = '0');
 			}
 			return (finalizedData[key] = '');
 		});
 		smtpKeys.forEach((key) => {
-			if (key == 'timeout' || key == 'port') {
+			if (key === 'timeout' || key === 'port') {
 				return (finalizedData[key] = 0);
-			} else if (key == 'useTls' || key == 'useSsl') {
+			} else if (key === 'useTls' || key === 'useSsl') {
 				return (finalizedData[key] = false);
 			}
 			return (finalizedData[key] = '');
@@ -272,17 +273,17 @@ const StackForm = ({ intl }) => {
 					</FormControl>
 				</Grid>
 				<Grid item xs={12} sm={6}>
-					{renderTextField(register, errors, 'siteTitle', 'settings.form.field.site_title')}
+					{renderTextField(control, errors, 'siteTitle', 'settings.form.field.site_title')}
 				</Grid>
 				<Grid item xs={12} sm={6}>
-					{renderTextField(register, errors, 'fromEmail', 'settings.form.field.from_email')}
+					{renderTextField(control, errors, 'fromEmail', 'settings.form.field.from_email')}
 				</Grid>
 				<Grid item xs={12} sm={6}>
-					{renderSwitch(register, control, 'failSilently', 'settings.form.field.fail_silently')}
+					{renderSwitch(control, 'failSilently', 'settings.form.field.fail_silently')}
 				</Grid>
 			</Grid>
-			{selectedBackend === 'SES' && <SESForm register={register} errors={errors} />}
-			{selectedBackend === 'SMTP' && <SMTPForm register={register} errors={errors} control={control} />}
+			{selectedBackend === 'SES' && <SESForm control={control} errors={errors} />}
+			{selectedBackend === 'SMTP' && <SMTPForm errors={errors} control={control} />}
 
 			<Box className={classes.actions}>
 				<ButtonLoader

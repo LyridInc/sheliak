@@ -4,7 +4,7 @@ import graphene
 from django.utils.translation import gettext as _
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.module_loading import import_string
-from graphql_auth.bases import MutationMixin
+from graphql_auth.bases import MutationMixin, DynamicArgsMixin
 from graphql_auth.constants import Messages
 from graphql_auth.settings import graphql_auth_settings as app_settings
 from graphql_jwt.decorators import staff_member_required
@@ -17,7 +17,7 @@ else:
     async_email_func = None
 
 
-class SendTestEmail(MutationMixin, graphene.Mutation):
+class SendTestEmail(MutationMixin, DynamicArgsMixin, graphene.Mutation):
     """
     Send Test email.
     """

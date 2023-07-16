@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
 import { ApolloProvider } from '@apollo/client/react';
@@ -18,12 +18,11 @@ Sentry.init({
 });
 
 const rootEl = document.getElementById('root');
-
-ReactDOM.render(
+const root = createRoot(rootEl);
+root.render(
 	<ApolloProvider client={apiClient}>
 		<AppContextProvider>
 			<RootApp />
 		</AppContextProvider>
 	</ApolloProvider>,
-	rootEl,
 );

@@ -5,3 +5,7 @@
 {% block plain %}
 This is a test email!
 {% endblock %}
+
+{% block html %}
+{% include 'templated_email/compiled/test.html' %}
+{% endblock %}

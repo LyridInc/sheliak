@@ -3,27 +3,27 @@ import PropTypes from 'prop-types';
 import { Grid } from '@mui/material';
 import { renderTextField } from 'components/Input';
 
-const DKIMForm = ({ register, errors }) => {
+const DKIMForm = ({ control, errors }) => {
 	return (
 		<>
 			<Grid item xs={12} sm={6}>
-				{renderTextField(register, errors, 'dkimDomain', 'settings.form.field.dkim_domain')}
+				{renderTextField(control, errors, 'dkimDomain', 'settings.form.field.dkim_domain')}
 			</Grid>
 			<Grid item xs={12} sm={6}>
-				{renderTextField(register, errors, 'dkimKey', 'settings.form.field.dkim_key')}
+				{renderTextField(control, errors, 'dkimKey', 'settings.form.field.dkim_key')}
 			</Grid>
 			<Grid item xs={12} sm={6}>
-				{renderTextField(register, errors, 'dkimSelector', 'settings.form.field.dkim_selector')}
+				{renderTextField(control, errors, 'dkimSelector', 'settings.form.field.dkim_selector')}
 			</Grid>
 			<Grid item xs={12} sm={6}>
-				{renderTextField(register, errors, 'dkimHeaders', 'settings.form.field.dkim_headers')}
+				{renderTextField(control, errors, 'dkimHeaders', 'settings.form.field.dkim_headers')}
 			</Grid>
 		</>
 	);
 };
 
 DKIMForm.propTypes = {
-	register: PropTypes.func,
+	control: PropTypes.object,
 	errors: PropTypes.object,
 };
 

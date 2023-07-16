@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import MUIDataTable from 'mui-datatables';
 import { useHistory } from 'react-router-dom';
 import { useLazyQuery } from '@apollo/client';
-import { Box, Button, IconButton, Tooltip } from '@mui/material';
+import { Box, Button, IconButton, Tooltip, ThemeProvider } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
 import ToolbarSelect from './ToolbarSelect';
@@ -16,7 +16,7 @@ import IntlMessages from 'helpers/Utils/IntlMessages';
 // import { Add as AddIcon, Refresh as RefreshIcon } from '@material-ui/icons';
 
 // import ContainerHeader from "components/ContainerHeader";
-// import dataTableTheme from "helpers/DataTableTheme";
+import dataTableTheme from 'assets/styles/dataTableTheme';
 // import LoaderTypography from "components/Loaders/LoaderTypography";
 
 const DataTable = (props) => {
@@ -34,6 +34,7 @@ const DataTable = (props) => {
 		title,
 		titleBar,
 		triggerRefresh,
+		onRowClick,
 	} = props;
 
 	const history = useHistory();
@@ -57,6 +58,7 @@ const DataTable = (props) => {
 	}
 
 	const [getItems, { loading }] = useLazyQuery(query, {
+		fetchPolicy: 'network-only',
 		onCompleted: (data) => {
 			const totalCount = _.get(data, `${queryKey}.totalCount`, 0);
 			const edges = _.get(data, `${queryKey}.edges`, []);
@@ -205,7 +207,7 @@ const DataTable = (props) => {
 		filter: true,
 		filterType: 'dropdown',
 		confirmFilters: true,
-
+		onRowClick: onRowClick,
 		search: search,
 		searchText: searchText,
 		onSearchClose: () => {
@@ -274,12 +276,14 @@ const DataTable = (props) => {
 
 	return (
 		<>
-			<MUIDataTable
-				title={<TableTitle title={titleBar} loading={loading} />}
-				data={items}
-				columns={cols}
-				options={options}
-			/>
+			<ThemeProvider theme={dataTableTheme()}>
+				<MUIDataTable
+					title={<TableTitle title={titleBar} loading={loading} />}
+					data={items}
+					columns={cols}
+					options={options}
+				/>
+			</ThemeProvider>
 			{/*<MuiThemeProvider theme={dataTableTheme()}>*/}
 			{/*</MuiThemeProvider>*/}
 			<Consent
@@ -307,6 +311,7 @@ DataTable.propTypes = {
 	selectableRows: PropTypes.string,
 	search: PropTypes.bool,
 	triggerRefresh: PropTypes.number,
+	onRowClick: PropTypes.func,
 };
 
 export default DataTable;

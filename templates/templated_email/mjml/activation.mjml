@@ -1,0 +1,31 @@
+<mjml>
+  <mj-body>
+    <mj-include path="./shared/header.mjml" />
+    <mj-include path="./shared/logo.mjml" />
+    <mj-section background-color="#ffffff" padding-top="20px" padding-bottom="20px">
+      <mj-column width="100%">
+        <mj-text font-size="20px" font-family="Lato, Helvetica, Arial, sans-serif" padding="10px 25px">Hi <strong>{{ user.get_full_name }}</strong>!
+            <br /><br />
+          	Welcome to Lyrid!
+            <br /><br />
+            We're excited to have you! But first, to complete your registration and successfully activate an account with <a href="{{ protocol }}://{{ frontend_domain }}">{{ company_name }}</a>, you will need to confirm your email address first.    <br />
+          <br />
+          Please click the button below to do so and log back into your account:
+          <br /><br />
+        </mj-text>
+        <mj-button font-size="20px" font-family="Helvetica"background-color="#512da8" href="{{ protocol }}://{{ frontend_domain }}/{{ path }}/{{ token }}">
+                  Activate
+         </mj-button>
+         <mj-text  font-size="20px" font-family="Lato, Helvetica, Arial, sans-serif" padding="10px 25px">
+            <br />
+            Or paste the following link in your web browser:
+            <br /><br />
+            {{ protocol }}://{{ frontend_domain }}/{{ path }}/{{ token }}
+            <br /><br />
+            Thank you for registering your Lyrid account, and we look forward to build something awesome together!
+         </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-include path="./shared/footer.mjml" />
+  </mj-body>
+</mjml>

@@ -184,6 +184,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         template = app_settings.EMAIL_TEMPLATE_PASSWORD_SET
         return send_email(self, template, email_context, *args, **kwargs)
 
+    def send_password_set_email_for_security_update(self, email_context, *args, **kwargs):
+        template = settings.EMAIL_TEMPLATE_FORCE_PASSWORD_RESET_SECURITY_UPDATE
+        return send_email(self, template, email_context, *args, **kwargs)
+
     def send_welcome_email(self, info, *args, **kwargs):
         email_context = get_trimmed_email_context(self, info)
         template = settings.EMAIL_TEMPLATE_WELCOME
@@ -193,7 +197,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class UserLogin(models.Model):
     """Represent users' logins, one per record"""
 
-    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="user_logins")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_logins")
     provider = models.CharField(max_length=100, default='django.contrib.auth.backends.ModelBackend')
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     timestamp = models.DateTimeField(default=timezone.now)

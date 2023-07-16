@@ -1,29 +1,35 @@
-// import { gql } from '@apollo/client';
-//
-//
-// const PROFILE_FRAGMENT = gql`
-// 	${IMAGE_FRAGMENT}
-// 	${CLOUDINARY_VIDEO_FRAGEMENT}
-// 	fragment ProfileFragment on ProfileType {
-// 		occupation
-// 		id
-// 		birthdate
-// 		gender
-// 		biography
-// 		tags
-// 		avatar {
-// 			...ImageFragment
-// 		}
-// 		mediaUnion {
-// 			__typename
-// 			...CloudinaryVideoFragment
-// 			...ImageFragment
-// 		}
-// 		age
-// 		birthdate
-// 	}
-// `;
-//
-// export const Fragments = {
-// 	// PROFILE_FRAGMENT,
-// };
+import { gql } from '@apollo/client';
+
+const USER_ADMIN_FIELDS_FRAGMENT = gql`
+	fragment UserFields on UserAdminType {
+		id
+		email
+		firstName
+		middleName
+		lastName
+		dateJoined
+		isStaff
+		isSuperuser
+		isActive
+		mobileNumber
+		profile {
+			id
+			gender
+			dateOfBirth
+			timezone
+			created
+			modified
+			picture
+			nationality
+			address
+			inviteCode
+			company
+			legacyId
+			extraInfo
+		}
+	}
+`;
+
+export const Fragments = {
+	USER_ADMIN_FIELDS_FRAGMENT,
+};

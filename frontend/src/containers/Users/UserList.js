@@ -1,19 +1,18 @@
 import React from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import { Link, useHistory } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
+import { useHistory } from 'react-router-dom';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { Menu, MenuItem, Button } from '@mui/material';
 
 import { useMutation } from '@apollo/client';
-import { UsersMutation } from 'graphql/mutations';
 import { UsersQuery } from 'graphql/queries';
-import { formatDateTime } from 'helpers/Utils/dateHelper';
 import DataTable from 'components/DataTable';
-import StatusIcon from 'components/DataTable/StatusIcon';
 import Consent from 'components/Dialogs/Consent';
-
-import { Menu, MenuItem, Button } from '@mui/material';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { UsersMutation } from 'graphql/mutations';
+import { formatDateTime } from 'helpers/Utils/dateHelper';
+import StatusIcon from 'components/DataTable/StatusIcon';
 
 const UserList = ({ intl }) => {
 	const history = useHistory();
@@ -23,7 +22,7 @@ const UserList = ({ intl }) => {
 	const [deletionConsentOpen, setDeletionConsentOpen] = React.useState(false);
 	const [triggerRefresh, setTriggerRefresh] = React.useState(0);
 
-	const [toggleUserActivation, { loading: activationLoading }] = useMutation(UsersMutation.TOGGLE_USER_ACTIVATION, {
+	const [toggleUserActivation, { loading: activationLoading }] = useMutation(UsersMutation.USER_TOGGLE_ACTIVATION_ADMIN, {
 		onCompleted: () => {
 			setActivationConsentOpen(!activationConsentOpen);
 			setTriggerRefresh(triggerRefresh + 1);
@@ -43,12 +42,17 @@ const UserList = ({ intl }) => {
 	const handleDeleteUser = () => {};
 
 	const handleContextMenu = (e, user) => {
+		e.stopPropagation();
 		setSelectedUser(user);
 		setAnchorEl(e.currentTarget);
 	};
 
-	const handleRedirectEdit = () => {
+	const handleManageProfile = () => {
 		history.push(`/app/users/${selectedUser[6]}/manage-profile`);
+	};
+
+	const handleRowClick = (rowData) => {
+		history.push(`/app/users/${rowData[6].props.id}/manage-profile`);
 	};
 
 	const columns = [
@@ -58,7 +62,7 @@ const UserList = ({ intl }) => {
 			options: {
 				filter: false,
 				customBodyRender: (value) => {
-					return !_.isEmpty(value) ? <Link to={'#'}>{value}</Link> : '-';
+					return !_.isEmpty(value) ? value : '-';
 				},
 			},
 		},
@@ -119,13 +123,17 @@ const UserList = ({ intl }) => {
 			options: {
 				filter: false,
 				searchable: false,
-				customBodyRender: (_, { rowData }) => (
-					<>
-						<Button aria-controls="manage-profile" aria-haspopup="true" onClick={(e) => handleContextMenu(e, rowData)}>
+				customBodyRender: (value, { rowData }) => {
+					return (
+						<Button
+							aria-controls="manage-profile"
+							id={value}
+							aria-haspopup="true"
+							onClick={(e) => handleContextMenu(e, rowData)}>
 							<MoreVertIcon />
 						</Button>
-					</>
-				),
+					);
+				},
 			},
 		},
 	];
@@ -133,7 +141,7 @@ const UserList = ({ intl }) => {
 	return (
 		<>
 			<Menu anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
-				<MenuItem onClick={handleRedirectEdit}>Edit</MenuItem>
+				<MenuItem onClick={handleManageProfile}>Manage</MenuItem>
 				<MenuItem onClick={() => setDeletionConsentOpen(!deletionConsentOpen)}>Delete</MenuItem>
 				<MenuItem onClick={() => setActivationConsentOpen(!activationConsentOpen)}>
 					{selectedUser && selectedUser[3] ? 'Deactivate' : 'Activate'}
@@ -167,6 +175,7 @@ const UserList = ({ intl }) => {
 				search={true}
 				addRoute={'/app/users/create'}
 				enableAddButton
+				onRowClick={handleRowClick}
 				triggerRefresh={triggerRefresh}
 			/>
 		</>

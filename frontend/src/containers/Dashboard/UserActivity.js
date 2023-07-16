@@ -1,27 +1,25 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
+import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client';
 import { Box, Grid, Paper, Typography } from '@mui/material';
 
 import { DashboardQuery } from 'graphql/queries';
-import DateRange from 'components/Pickers/DateRange';
 import ActivityGraph from 'components/Graphs/ActivityGraph';
 import IntlMessages from 'helpers/Utils/IntlMessages';
 import useDashboardStyles from 'assets/styles/Containers/Dashboard';
 
-const UserActivity = () => {
+const UserActivity = (props) => {
 	const classes = useDashboardStyles();
 	const [data, setData] = useState({});
-	const [selectionRange, setSelectionRange] = useState({
-		startDate: new Date(Date.now() - 12096e5), // Magic number for two weeks.
-		endDate: new Date(),
-		key: 'selection',
-	});
+
+	const { selectionRange } = props;
 
 	// TODO:
 	// Implement debounce to optimize the code.
 	// Make sure the query doesn't get fired on each page reload.
 	// Maybe useLazyQuery to fetch the chart data.
+
 	useQuery(DashboardQuery.GET_LOGIN_STATISTICS, {
 		variables: {
 			dateRange: JSON.stringify([
@@ -46,14 +44,16 @@ const UserActivity = () => {
 							<IntlMessages id={'dashboard.userActivity.titleTagLine'} />
 						</Typography>
 					</Box>
-
-					<DateRange selectionRange={selectionRange} setSelectionRange={setSelectionRange} />
 				</Box>
 
 				<ActivityGraph data={data} />
 			</Box>
 		</Grid>
 	);
+};
+
+UserActivity.propTypes = {
+	selectionRange: PropTypes.object,
 };
 
 export default UserActivity;
