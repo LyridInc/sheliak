@@ -1,11 +1,21 @@
 {% block subject %}
-  Welcome to Example.com
+  Welcome to Lyrid!
 {% endblock %}
 
 {% block plain %}
 {% include 'templated_email/shared/_header.email' %}
 
-Welcome to Example.com
+Welcome to Lyrid! We are glad to have you here!
+
+WHAT IS LYRID?
+
+Lyrid is a cloud platform that enables users to write serverless functions that can then be flexibly deployed on any cloud platform, without being locked into a specific cloud vendor (like Amazon Web Service Lambda (AWS) or Google Cloud Platform Cloud Run (GCP).
+We using serverless to deliver a platform for you to build, deploy, scale out and maintain your applications and services over the web.
+Check out our https://docs.lyrid.io and get started on building and running your application in less than 15 minutes!
+
+Thank you for your support and please don't hesitate to drop by our https://api.lyrid.io/slack channel!
+
+We love to hear your feedback, suggestions, and ideas that you want to build in the platform!
 
 {% include 'templated_email/shared/_footer.email' %}
 {% endblock %}

@@ -32,14 +32,30 @@ def graphql_auth_async_email(func, args):
 def force_user_to_reset_password(user):
     logger.info("Force user to reset password - %s {%s}" % (user, user.email))
 
-    token = get_token(user, TokenAction.PASSWORD_SET)
+    token = get_token(user, TokenAction.PASSWORD_RESET)
     email_context = {
         "user": user,
         "token": token,
         "protocol": "https",
-        "path": app_settings.PASSWORD_SET_PATH_ON_EMAIL,
+        "path": app_settings.PASSWORD_RESET_PATH_ON_EMAIL,
         "timestamp": time.time(),
         **app_settings.EMAIL_TEMPLATE_VARIABLES,
     }
 
     user.send_password_set_email_for_import_users(email_context)
+
+
+def force_user_to_reset_password_security_update(user):
+    logger.info("Force user to reset password security update - %s {%s}" % (user, user.email))
+
+    token = get_token(user, TokenAction.PASSWORD_RESET)
+    email_context = {
+        "user": user,
+        "token": token,
+        "protocol": "https",
+        "path": app_settings.PASSWORD_RESET_PATH_ON_EMAIL,
+        "timestamp": time.time(),
+        **app_settings.EMAIL_TEMPLATE_VARIABLES,
+    }
+
+    user.send_password_set_email_for_security_update(email_context)

@@ -3,78 +3,29 @@ import { TextField, Box, FormControlLabel, Switch } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { Controller } from 'react-hook-form';
 import Autocomplete from '@mui/material/Autocomplete';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
-const renderTextField = (register, errors, fieldName, intlPrefix, options = { type: 'text', required: false }) => {
-	const { ref: fieldRef, ...fieldInputProps } = register(fieldName, {
-		required: options.required,
-	});
-
+const renderTextField = (control, errors, fieldName, intlPrefix, options = { type: 'text', required: false }) => {
 	return (
 		<FormattedMessage id={`${intlPrefix}.placeholder`}>
 			{(placeholder) => (
-				<TextField
-					{...fieldInputProps}
-					type={options.type}
-					label={<FormattedMessage id={`${intlPrefix}.label`} />}
-					variant="standard"
-					inputRef={fieldRef}
-					InputLabelProps={{
-						shrink: true,
-					}}
-					error={!!errors[fieldName]}
-					helperText={errors[fieldName] ? errors[fieldName].message : ''}
-					placeholder={placeholder[0]}
-					fullWidth
-					required={options.required}
-				/>
-			)}
-		</FormattedMessage>
-	);
-};
-
-const renderSwitch = (register, control, fieldName, intlPrefix) => {
-	const { ref: fieldRef, ...fieldInputProps } = register(fieldName);
-
-	return (
-		<Box display="flex" justifyContent="flex-start">
-			<FormattedMessage id={`${intlPrefix}.label`}>
-				{(label) => (
-					<Controller
-						{...fieldInputProps}
-						control={control}
-						inputRef={fieldRef}
-						defaultValue={false}
-						render={({ field }) => (
-							<FormControlLabel name={fieldName} control={<Switch {...field} checked={field.value} />} label={label[0]} />
-						)}
-					/>
-				)}
-			</FormattedMessage>
-		</Box>
-	);
-};
-
-const renderAutoComplete = (register, errors, fieldName, options, intlPrefix) => {
-	const { ref: fieldRef, ...fieldInputProps } = register(fieldName);
-
-	return (
-		<FormattedMessage id={`${intlPrefix}.placeholder`}>
-			{(placeholder) => (
-				<Autocomplete
-					disablePortal
-					options={options}
-					renderInput={(params) => (
+				<Controller
+					name={fieldName}
+					control={control}
+					render={({ field }) => (
 						<TextField
-							{...params}
-							{...fieldInputProps}
-							inputRef={fieldRef}
+							{...field}
+							type={options.type}
 							label={<FormattedMessage id={`${intlPrefix}.label`} />}
-							InputLabelProps={{ shrink: true }}
+							variant="standard"
+							InputLabelProps={{
+								shrink: true,
+							}}
 							error={!!errors[fieldName]}
 							helperText={errors[fieldName] ? errors[fieldName].message : ''}
 							placeholder={placeholder[0]}
 							fullWidth
-							variant="standard"
+							required={options.required}
 						/>
 					)}
 				/>
@@ -83,4 +34,95 @@ const renderAutoComplete = (register, errors, fieldName, options, intlPrefix) =>
 	);
 };
 
-export { renderTextField, renderSwitch, renderAutoComplete };
+const renderSwitch = (control, fieldName, intlPrefix) => {
+	return (
+		<Box display="flex" justifyContent="flex-start">
+			<FormattedMessage id={`${intlPrefix}.label`}>
+				{(label) => (
+					<Controller
+						name={fieldName}
+						control={control}
+						render={({ field }) => (
+							<FormControlLabel
+								name={fieldName}
+								control={<Switch {...field} checked={field.value} onChange={(e) => field.onChange(e.target.checked)} />}
+								label={label[0]}
+							/>
+						)}
+					/>
+				)}
+			</FormattedMessage>
+		</Box>
+	);
+};
+
+const renderAutoComplete = (control, errors, fieldName, options = [], intlPrefix = '') => {
+	return (
+		<FormattedMessage id={`${intlPrefix}.placeholder`}>
+			{(placeholder) => (
+				<Controller
+					name={fieldName}
+					control={control}
+					render={({ field }) => (
+						<Autocomplete
+							{...field}
+							disablePortal
+							options={options}
+							getOptionLabel={(option) => option.label}
+							renderInput={(params) => (
+								<TextField
+									{...params}
+									label={<FormattedMessage id={`${intlPrefix}.label`} />}
+									InputLabelProps={{ shrink: true }}
+									error={!!errors[fieldName]}
+									helperText={errors[fieldName] ? errors[fieldName].message : ''}
+									placeholder={placeholder[0]}
+									fullWidth
+									variant="standard"
+								/>
+							)}
+							value={options?.find((option) => option.value === field.value)}
+							onChange={(_, value) => field.onChange(value?.value)}
+						/>
+					)}
+				/>
+			)}
+		</FormattedMessage>
+	);
+};
+
+const renderDatePickerField = (control, errors, fieldName, intlPrefix = '') => {
+	return (
+		<FormattedMessage id={`${intlPrefix}.placeholder`}>
+			{(placeholder) => (
+				<Controller
+					name={fieldName}
+					control={control}
+					// defaultValue={defaultValue}
+					render={({ field }) => (
+						<DatePicker
+							// value={field.value || null}
+							{...field}
+							label={<FormattedMessage id={`${intlPrefix}.label`} />}
+							placeholder={placeholder[0]}
+							// onChange={field.onChange}
+							fullWidth
+							sx={{ width: '100%' }}
+							renderInput={(params) => (
+								<TextField
+									{...params}
+									InputLabelProps={{ shrink: true }}
+									error={!!errors[fieldName]}
+									helperText={errors[fieldName] ? errors[fieldName].message : ''}
+									variant="standard"
+								/>
+							)}
+						/>
+					)}
+				/>
+			)}
+		</FormattedMessage>
+	);
+};
+
+export { renderTextField, renderSwitch, renderAutoComplete, renderDatePickerField };

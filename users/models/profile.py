@@ -28,6 +28,7 @@ class Profile(TimeStampedModel):
     invite_code = models.CharField(blank=True, max_length=255)
     company = models.CharField(blank=True, max_length=1024)
     legacy_id = models.CharField(max_length=255, blank=True)
+    extra_info = models.JSONField(null=False, default=dict)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     class Meta:
@@ -37,4 +38,4 @@ class Profile(TimeStampedModel):
         return str(self.user.first_name + " " + self.user.last_name + "[" + str(self.user.id) + "] Profile")
 
     def get_gender(self):
-        return dict(self.GENDER_CHOICES)[self.gender]
+        return self.gender or ''

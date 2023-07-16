@@ -39,7 +39,7 @@ const UserCreate = ({ intl }) => {
 		resolver: yupResolver(createUserSchema),
 	});
 
-	const [registerAdmin, { loading: createUserLoading }] = useMutation(UsersMutation.REGIS_ADMIN, {
+	const [registerAdmin, { loading: createUserLoading }] = useMutation(UsersMutation.USER_REGISTRATION_ADMIN, {
 		onCompleted: (data) => {
 			// console.log(data);
 			if (data && data.registerAdmin) {

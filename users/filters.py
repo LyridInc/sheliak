@@ -81,3 +81,11 @@ class UserLoginFilter(FilterSet):
     class Meta:
         model = UserLogin
         fields = ['date_range']
+
+
+class UserGrowthFilter(FilterSet):
+    date_range = DateFromToRangeFilter(field_name='date_joined')
+
+    class Meta:
+        model = User
+        fields = ['date_range']

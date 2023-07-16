@@ -5,8 +5,14 @@
 {% block plain %}
 {% include 'templated_email/shared/_header.email' %}
 
-Please activate your account on the link:
+Welcome to Lyrid!
+
+We're excited to have you! But first, to complete your registration and successfully activate an account with {{ company_name }}, you will need to confirm your email address first.
+Please click the button below to do so and log back into your account:
+
 {{ protocol }}://{{ frontend_domain }}/{{ path }}/{{ token }}
+
+Thank you for registering your Lyrid account, and we look forward to build something awesome together!
 
 {% include 'templated_email/shared/_footer.email' %}
 {% endblock %}

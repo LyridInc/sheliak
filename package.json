@@ -1,11 +1,11 @@
 {
   "name": "sheliak",
-  "version": "0.1",
+  "version": "0.2",
   "private": true,
   "author": "Lyrid Team",
   "dependencies": {},
   "devDependencies": {
-    "mjml": "4.7.1"
+    "mjml": "4.13.0"
   },
   "scripts": {
     "build-emails": "mjml --config.beautify false -l skip \"templates/templated_email/mjml/*.mjml\" -o templates/templated_email/compiled"

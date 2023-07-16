@@ -30,29 +30,31 @@ const GET_USERS = gql`
 const GET_USER = gql`
 	query GetUser($id: ID!) {
 		user(id: $id) {
-			email
-			firstName
-			fullName
 			id
 			pk
-			isStaff
-			isSuperuser
-			isActive
+			email
+			firstName
+			middleName
 			lastName
+			fullName
+			isStaff
+			isActive
+			isSuperuser
 			mobileNumber
 			profile {
 				id
 				gender
-				dateOfBirth
-				timezone
-				created
-				modified
 				picture
+				dateOfBirth
 				nationality
+				timezone
 				address
 				inviteCode
 				company
 				legacyId
+				extraInfo
+				created
+				modified
 			}
 		}
 	}

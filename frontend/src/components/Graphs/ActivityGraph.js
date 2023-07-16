@@ -1,10 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { deepPurple } from '@mui/material/colors';
 import PropTypes from 'prop-types';
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Typography } from '@mui/material';
 
+import ClickableLegend from 'components/Graphs/ClickableLegend';
+
 const ActivityGraph = ({ data }) => {
+	const [unselected, setUnselected] = useState({});
+
+	const handleLegendClick = (entry) => {
+		setUnselected({
+			...unselected,
+			[entry.value]: !unselected[entry.value],
+		});
+	};
+
 	const getSocialValue = (d) => {
 		return d.node.facebook + d.node.github + d.node.google;
 	};
@@ -34,18 +45,44 @@ const ActivityGraph = ({ data }) => {
 				<XAxis dataKey="node.date" minTickGap={10} tickMargin={5} />
 
 				<YAxis />
-				<Legend />
+				<Legend onClick={handleLegendClick} />
+				<Legend content={(props) => <ClickableLegend {...props} onClick={handleLegendClick} {...unselected} />} />
 				<Line
 					type="monotone"
 					dataKey="node.total"
-					stroke="#003f5c"
+					stroke="#0000FF"
 					strokeWidth={2}
 					name="Total logins"
-					activeDot={{ r: 8 }}
+					dot={false}
+					hide={unselected['Total logins']}
 				/>
-				<Line type="monotone" dataKey="node.unique" stroke="#58508d" strokeWidth={2} name="Unique logins" />
-				<Line type="monotone" dataKey={getSocialValue} stroke="#bc5090" strokeWidth={2} name="Social logins" />
-				<Line type="monotone" dataKey="node.django" stroke="#ff6361" strokeWidth={2} name="Local logins" />
+				<Line
+					type="monotone"
+					dataKey="node.unique"
+					stroke="#009D00"
+					strokeWidth={2}
+					dot={false}
+					hide={unselected['Unique logins']}
+					name="Unique logins"
+				/>
+				<Line
+					type="monotone"
+					dataKey={getSocialValue}
+					stroke="#FF0000"
+					strokeWidth={2}
+					dot={false}
+					hide={unselected['Social logins']}
+					name="Social logins"
+				/>
+				<Line
+					type="monotone"
+					dataKey="node.django"
+					stroke="#8989FF"
+					strokeWidth={2}
+					dot={false}
+					hide={unselected['Local logins']}
+					name="Local logins"
+				/>
 			</LineChart>
 		</ResponsiveContainer>
 	);

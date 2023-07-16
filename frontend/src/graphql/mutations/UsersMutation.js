@@ -1,6 +1,7 @@
 import { gql } from '@apollo/client';
+import { Fragments } from 'graphql/fragments';
 
-const CHANGE_PASSWORD = gql`
+const USER_CHANGE_PASSWORD_ADMIN = gql`
 	mutation PasswordSetStaff($userId: ID!, $newPassword1: String!, $newPassword2: String!) {
 		passwordSetAdmin(id: $userId, newPassword1: $newPassword1, newPassword2: $newPassword2) {
 			errors
@@ -9,7 +10,8 @@ const CHANGE_PASSWORD = gql`
 	}
 `;
 
-const REGIS_ADMIN = gql`
+const USER_REGISTRATION_ADMIN = gql`
+	${Fragments.USER_ADMIN_FIELDS_FRAGMENT}
 	mutation registerAdmin(
 		$email: String!
 		$password: String!
@@ -33,68 +35,41 @@ const REGIS_ADMIN = gql`
 			success
 			errors
 			user {
-				email
-				firstName
-				id
-				isStaff
-				isSuperuser
-				isActive
-				lastName
-				mobileNumber
-				profile {
-					id
-					gender
-					dateOfBirth
-					timezone
-					created
-					modified
-					picture
-					nationality
-					address
-					inviteCode
-					company
-					legacyId
-				}
+				...UserFields
 			}
 		}
 	}
 `;
 
-const TOGGLE_USER_ACTIVATION = gql`
+const USER_TOGGLE_ACTIVATION_ADMIN = gql`
+	${Fragments.USER_ADMIN_FIELDS_FRAGMENT}
 	mutation updateAccountAdmin($id: ID!, $isActive: Boolean!) {
 		updateAccountAdmin(id: $id, input: { isActive: $isActive }) {
 			success
 			errors
 			user {
-				email
-				firstName
-				id
-				isStaff
-				isSuperuser
-				isActive
-				lastName
-				mobileNumber
-				profile {
-					id
-					gender
-					dateOfBirth
-					timezone
-					created
-					modified
-					picture
-					nationality
-					address
-					inviteCode
-					company
-					legacyId
-				}
+				...UserFields
+			}
+		}
+	}
+`;
+
+const USER_UPDATE_ACCOUNT_ADMIN = gql`
+	${Fragments.USER_ADMIN_FIELDS_FRAGMENT}
+	mutation updateAccountAdmin($id: ID!, $input: UpdateUserInputStaff!) {
+		updateAccountAdmin(id: $id, input: $input) {
+			success
+			errors
+			user {
+				...UserFields
 			}
 		}
 	}
 `;
 
 export const UsersMutation = {
-	CHANGE_PASSWORD,
-	REGIS_ADMIN,
-	TOGGLE_USER_ACTIVATION,
+	USER_CHANGE_PASSWORD_ADMIN,
+	USER_REGISTRATION_ADMIN,
+	USER_TOGGLE_ACTIVATION_ADMIN,
+	USER_UPDATE_ACCOUNT_ADMIN,
 };

@@ -31,7 +31,7 @@ const UserManagePassword = ({ intl, user }) => {
 		resolver: yupResolver(changePasswordSchema),
 	});
 
-	const [changePassword, { loading }] = useMutation(UsersMutation.CHANGE_PASSWORD, {
+	const [changePassword, { loading }] = useMutation(UsersMutation.USER_CHANGE_PASSWORD_ADMIN, {
 		onCompleted: (data) => {
 			if (data && data.passwordSetAdmin) {
 				const response = data.passwordSetAdmin;

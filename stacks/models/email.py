@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
 from django.core.exceptions import ValidationError
@@ -60,7 +61,7 @@ class Email(TimeStampedModel):
 
     def send_test_email(self, info, *args, **kwargs):
         email_context = get_trimmed_email_context(self, info)
-        template = 'stacks/test'
+        template = settings.EMAIL_TEMPLATE_TEST_EMAIL
         return send_email(self, template, email_context, *args, **kwargs)
 
     class Meta:

@@ -17,7 +17,10 @@ def dashed_to_camel(dashed_data):
     return data
 
 
-def pct_change(previous, current):
+def percentage_change(previous, current):
+    if previous is None or current is None:
+        return 0
+
     diff = current - previous
     change = 0
     try:
@@ -28,7 +31,7 @@ def pct_change(previous, current):
             change = -((diff / previous) * 100)
     except ZeroDivisionError:
         return 100
-    return change
+    return round(change, 2)
 
 
 class PaginatorConnection(Connection):

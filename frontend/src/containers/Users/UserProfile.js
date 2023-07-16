@@ -1,319 +1,364 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useParams, useHistory } from 'react-router-dom';
-import { Box, Tabs, Tab, TextField, Backdrop, CircularProgress, Grid, Paper, Button } from '@mui/material';
-import UserManagePassword from './UserPassword/UserManagePassword';
-import UserResetPassword from './UserPassword/UserResetPassword';
-import ButtonLoader from 'components/Buttons/ButtonWithLoader';
-import TabPanel from 'components/TabPanel';
-import useUsersStyles from 'assets/styles/Containers/Users';
-import { injectIntl } from 'react-intl';
-import { useLazyQuery } from '@apollo/client';
-import { UsersQuery } from 'graphql/queries';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { DatePicker } from '@mui/lab';
-import { renderTextField, renderSwitch, renderAutoComplete } from 'components/Input';
+import { parseISO } from 'date-fns';
+import { injectIntl } from 'react-intl';
+import { useForm } from 'react-hook-form';
+import { useMutation, useLazyQuery } from '@apollo/client';
+import { deepOrange } from '@mui/material/colors';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useToasts } from 'react-toast-notifications';
+import { useHistory, useParams } from 'react-router-dom';
+import { Avatar, Box, Button, Grid, Paper, Tab, Tabs } from '@mui/material';
+import { Facebook as UserManageSkeleton } from 'react-content-loader';
+
+import TabPanel from 'components/TabPanel';
+import { HelperQuery, UsersQuery } from 'graphql/queries';
+import ButtonLoader from 'components/Buttons/ButtonWithLoader';
+import UserResetPassword from './UserPassword/UserResetPassword';
+import UserManagePassword from './UserPassword/UserManagePassword';
+import { renderAutoComplete, renderDatePickerField, renderSwitch, renderTextField } from 'components/Input';
+import { UsersMutation } from 'graphql/mutations';
+import { errorHandler } from 'store/Links/errorLink';
+
+const formFields = {
+	email: '',
+	firstName: '',
+	middleName: '',
+	lastName: '',
+	isStaff: false,
+	isActive: false,
+	isSuperuser: false,
+	mobileNumber: '',
+
+	gender: '',
+	picture: '',
+	dateOfBirth: '',
+	nationality: '',
+	timezone: '',
+	address: '',
+	inviteCode: '',
+	company: '',
+	legacyId: '',
+	extraInfo: '',
+};
+
+const userSchema = yup.object().shape({
+	email: yup.string().required('Email field is required').email('Email must be a valid email address'),
+	firstName: yup.string().required('Enter your first name'),
+	middleName: yup.string(),
+	lastName: yup.string(),
+	isStaff: yup.boolean(),
+	isActive: yup.boolean(),
+	isSuperUser: yup.boolean(),
+	mobileNumber: yup.string(),
+
+	// Profile fields
+	gender: yup.string(),
+	picture: yup.string(),
+	dateOfBirth: yup.string(),
+	nationality: yup.string(),
+	timezone: yup.string(),
+	address: yup.string(),
+	inviteCode: yup.string(),
+	company: yup.string(),
+	legacyId: yup.string(),
+	extraInfo: yup.string(),
+});
+
+const genderOptions = [
+	{ label: 'Male', value: 'M' },
+	{ label: 'Female', value: 'F' },
+	{ label: 'Other', value: 'O' },
+	{ label: '-', value: '' },
+];
 
 const UserProfile = ({ intl }) => {
 	const { id } = useParams();
 	const history = useHistory();
-	const classes = useUsersStyles();
-	const [selectedTab, setSelectedTab] = React.useState(0);
-	const [user, setUser] = React.useState({});
-	const [date, setDate] = React.useState(null);
-
-	const personalInformationSchema = yup.object().shape({
-		email: yup.string().required('Email field is required').email('Email must be a valid email address'),
-		firstName: yup.string().required('Enter your first name'),
-		middleName: yup.string(),
-		lastName: yup.string().required('Enter your last name'),
-		inviteCode: yup.string(),
-		companyName: yup.string().required('Enter your company name'),
-		nationality: yup.string().required('Enter your nationality'),
-		address: yup.string().required('Enter your address'),
-		mobileNumber: yup.string().required('Enter your mobile number'),
-	});
+	const { addToast } = useToasts();
+	const [selectedTab, setSelectedTab] = useState(0);
+	const [user, setUser] = useState();
 
 	const {
-		register: personalInformationRegister,
-		handleSubmit: personalInformationSubmitHandler,
-		formState: {
-			errors: personalInformationErrors,
-			isValid: isPersonalInformationValid,
-			isSubmitting: isPersonalInformationSubmitting,
-		},
-		setValue: setPersonalInformationValue,
+		handleSubmit,
+		reset,
+		formState: { errors, isValid, isSubmitting, isDirty },
 		control,
 	} = useForm({
 		mode: 'all',
-		resolver: yupResolver(personalInformationSchema),
+		resolver: yupResolver(userSchema),
 	});
 
-	const { ref: dateOfBirthRef, ...dateOfBirthInputProps } = personalInformationRegister('dateOfBirth');
+	const [getNationalities, { data: nationalityOptions, loading: nationalityQueryLoading }] = useLazyQuery(
+		HelperQuery.GET_NATIONALITIES,
+	);
+	const [getTimezones, { data: timezoneOptions, loading: timezoneQueryLoading }] = useLazyQuery(HelperQuery.GET_TIMEZONES);
+	const [getUser, { data: userData, loading: userQueryLoading }] = useLazyQuery(UsersQuery.GET_USER, {
+		fetchPolicy: 'network-only',
+		variables: {
+			id,
+		},
+	});
 
-	const onPersonalInformationSubmmit = () => {
-		// const variables = {
-		// 	email: data.email,
-		// 	firstName: data.firstName,
-		// 	middleName: data.middleName,
-		// 	lastName: data.lastName,
-		// 	inviteCode: data.inviteCode,
-		// 	companyName: data.companyName,
-		// 	nationality: data.nationality,
-		// 	address: data.address,
-		// 	mobileNumber: data.mobileNumber,
-		// 	timezone: data.timezone,
-		// 	gender: data.gender,
-		// };
-		// do some graphql mutations here
-		//   login({
-		//     variables: variables,
-		//   });
-	};
-
-	const [getUser, { loading: getUserLoading }] = useLazyQuery(UsersQuery.GET_USER, {
+	const [updateAccount, { loading: updateLoading }] = useMutation(UsersMutation.USER_UPDATE_ACCOUNT_ADMIN, {
 		onCompleted: (data) => {
-			if (data.user) {
-				setUser(data.user);
-
-				const keys = Object.keys(data.user);
-				keys.forEach((key) => {
-					if (key == 'profile') {
-						const profile = data.user['profile'];
-						const profileKeys = Object.keys(profile);
-						profileKeys.forEach((profileKey) => {
-							setPersonalInformationValue(profileKey, profile[profileKey]);
-						});
+			if (data && data.updateAccountAdmin) {
+				const response = data.updateAccountAdmin;
+				let errors = [{ message: intl.formatMessage({ id: 'users.update.response.error' }) }];
+				if (response.success) {
+					addToast(intl.formatMessage({ id: 'users.update.response.success' }), { appearance: 'success' });
+				} else {
+					if (response.errors && response.errors.length > 0) {
+						errorHandler(response.errors[0]);
 					} else {
-						setPersonalInformationValue(key, data.user[key]);
+						errorHandler(errors[0]);
 					}
-				});
+				}
+			} else {
+				errorHandler(errors[0]);
 			}
 		},
 	});
 
-	const updatePersonalInformationLoading = false; // TBA
+	const onSubmit = (json) => {
+		const dob = new Date(json.dateOfBirth);
+		const year = dob.getFullYear();
+		const month = ('0' + (dob.getMonth() + 1)).slice(-2);
+		const day = ('0' + dob.getDate()).slice(-2);
+		const dobString = `${year}-${month}-${day}`;
 
-	React.useEffect(() => {
-		getUser({
+		const formattedData = {
+			email: json.email,
+			firstName: json.firstName,
+			isActive: json.isActive,
+			isStaff: json.isStaff,
+			isSuperuser: json.isSuperuser,
+			lastName: json.lastName,
+			middleName: json.middleName,
+			mobileNumber: json.mobileNumber,
+			profile: {
+				address: json.address,
+				company: json.company,
+				dateOfBirth: dobString,
+				extraInfo: json.extraInfo,
+				gender: json.gender,
+				inviteCode: json.inviteCode,
+				legacyId: json.legacyId,
+				nationality: json.nationality,
+				picture: json.picture,
+				timezone: json.timezone,
+			},
+		};
+
+		updateAccount({
 			variables: {
-				id,
+				id: user.pk,
+				input: formattedData,
 			},
 		});
-	}, [getUser, id]);
+	};
 
-	const nationality = [{ label: 'Indonesia' }, { label: 'USA' }, { label: 'India' }, { label: 'Russia' }];
+	function populateFormFields(formData) {
+		const populatedFormFields = { ...formFields };
 
-	const timezone = [
-		{ label: 'UTC +7 (Waktu Indonesia Barat)', value: 'UTC+7' },
-		{ label: 'UTC -8 (Pacific Standard Time)', value: 'UTC-8' },
-		{ label: 'UTC +5:30 (Indian Standard Time)', value: 'UTC+5' },
-		{ label: 'UTC +10 (Vladivostok Time)', value: 'UTC+10' },
-		{ label: 'UTC 0 (London Time)', value: 'UTC' },
-	];
+		Object.keys(populatedFormFields).forEach((key) => {
+			if (key in formData) {
+				populatedFormFields[key] = formData[key];
+			} else if (key === 'dateOfBirth' && key in formData.profile) {
+				populatedFormFields[key] = parseISO(formData.profile[key]);
+			} else if (key in formData.profile) {
+				populatedFormFields[key] = formData.profile[key];
+			}
+		});
 
-	const gender = [
-		{ label: 'Male', value: 'M' },
-		{ label: 'Female', value: 'F' },
-		{ label: 'Other', value: 'O' },
-		{ label: '-', value: 'A_' },
-	];
+		return populatedFormFields;
+	}
+
+	useEffect(() => {
+		getUser();
+		getTimezones();
+		getNationalities();
+		// eslint-disable-next-line
+	},[])
+
+	useEffect(() => {
+		if (!userQueryLoading && !timezoneQueryLoading && !nationalityQueryLoading) {
+			if (userData && nationalityOptions && timezoneOptions) {
+				setUser(userData.user);
+				const defaultValues = populateFormFields(userData.user);
+				reset({ ...defaultValues });
+			}
+		}
+		// eslint-disable-next-line
+	}, [userQueryLoading, timezoneQueryLoading, nationalityQueryLoading]);
 
 	return (
-		<Box component={Paper} elevation={4} className={classes.users}>
-			<Backdrop style={{ zIndex: 1 }} open={getUserLoading}>
-				<CircularProgress color="inherit" />
-			</Backdrop>
-
-			<div className={classes.headers}>
-				<h1 style={{ marginBottom: 0 }}>{`${user.firstName} ${user.lastName}`}</h1>
-				<div>{user.email}</div>
-				<div>ID: {user.id}</div>
-			</div>
-
-			<Tabs
-				value={selectedTab}
-				onChange={(_, tab) => setSelectedTab(tab)}
-				indicatorColor="primary"
-				textColor="primary"
-				variant="scrollable"
-				scrollButtons="auto"
-				aria-label="scrollable tabs">
-				<Tab label="Personal" />
-				<Tab label="Administration" />
-			</Tabs>
-
-			<TabPanel value={selectedTab} index={0}>
-				<h2>Personal Information</h2>
-				<form onSubmit={personalInformationSubmitHandler(onPersonalInformationSubmmit)}>
-					<Grid container spacing={2}>
-						<Grid item xs={12} sm={6}>
-							{renderTextField(
-								personalInformationRegister,
-								personalInformationErrors,
-								'firstName',
-								'users.create.form.from_firstName',
-								{
-									required: true,
-								},
+		<Box component={Paper} elevation={4} sx={{ minHeight: 'calc(100vh - 80px)', padding: 2, margin: 2 }}>
+			{!user || userQueryLoading || timezoneQueryLoading || nationalityQueryLoading ? (
+				<UserManageSkeleton />
+			) : (
+				<>
+					<Box sx={{ display: 'flex', alignItems: 'center', padding: 2 }}>
+						<Box sx={{ flexShrink: 0, marginRight: 2 }}>
+							{user.picture ? (
+								<Avatar
+									src={user.picture}
+									alt={user.firstName}
+									variant="rounded"
+									sx={{
+										width: 100,
+										height: 100,
+										boxShadow: '0 0 5px rgba(0,0,0,0.3)',
+									}}
+								/>
+							) : (
+								<Avatar
+									variant="rounded"
+									sx={{
+										width: 100,
+										height: 100,
+										fontSize: '6rem',
+										backgroundColor: deepOrange[500],
+										boxShadow: '0 0 5px rgba(0,0,0,0.3)',
+									}}>
+									{user.firstName.charAt(0).toUpperCase()}
+								</Avatar>
 							)}
-						</Grid>
-						<Grid item xs={12} sm={6}>
-							{renderTextField(
-								personalInformationRegister,
-								personalInformationErrors,
-								'middleName',
-								'users.create.form.from_middleName',
-							)}
-						</Grid>
-						<Grid item xs={12} sm={6}>
-							{renderTextField(
-								personalInformationRegister,
-								personalInformationErrors,
-								'lastName',
-								'users.create.form.from_lastName',
-							)}
-						</Grid>
-						<Grid item xs={12} sm={6}>
-							{renderTextField(
-								personalInformationRegister,
-								personalInformationErrors,
-								'email',
-								'users.create.form.field.email',
-								{
-									type: 'email',
-									required: true,
-								},
-							)}
-						</Grid>
-						<Grid item xs={12} sm={6}>
-							{renderTextField(
-								personalInformationRegister,
-								personalInformationErrors,
-								'mobileNumber',
-								'users.create.form.from_mobileNumber',
-							)}
-						</Grid>
-						<Grid item xs={12} sm={6}>
-							{renderAutoComplete(
-								personalInformationRegister,
-								personalInformationErrors,
-								'gender',
-								gender,
-								'users.create.form.from_gender',
-							)}
-						</Grid>
-						<Grid item xs={12} sm={6}>
-							<DatePicker
-								value={date}
-								label={intl.formatMessage({ id: 'users.create.form.from_dateOfBirth.label' })}
-								placeholder={intl.formatMessage({ id: 'users.create.form.from_dateOfBirth.placeholder' })}
-								onChange={(newValue) => {
-									setDate(newValue);
-								}}
-								renderInput={(params) => (
-									<TextField
-										{...dateOfBirthInputProps}
-										inputRef={dateOfBirthRef}
-										InputLabelProps={{ shrink: true }}
-										error={!!personalInformationErrors.email}
-										helperText={personalInformationErrors.email ? personalInformationErrors.email.message : ''}
-										{...params}
-										variant="standard"
-										fullWidth
-										required
-									/>
-								)}
-							/>
-						</Grid>
-						<Grid item xs={12} sm={6}>
-							{renderTextField(
-								personalInformationRegister,
-								personalInformationErrors,
-								'address',
-								'users.create.form.from_address',
-							)}
-						</Grid>
-						<Grid item xs={12} sm={6}>
-							{renderTextField(
-								personalInformationRegister,
-								personalInformationErrors,
-								'company',
-								'users.create.form.from_companyName',
-							)}
-						</Grid>
-						<Grid item xs={12} sm={6}>
-							{renderAutoComplete(
-								personalInformationRegister,
-								personalInformationErrors,
-								'nationality',
-								nationality,
-								'users.create.form.from_nationality',
-							)}
-						</Grid>
-						<Grid item xs={12} sm={6}>
-							{renderAutoComplete(
-								personalInformationRegister,
-								personalInformationErrors,
-								'timezone',
-								timezone,
-								'users.create.form.from_timezone',
-							)}
-						</Grid>
-						<Grid item xs={12} sm={6}>
-							{renderTextField(
-								personalInformationRegister,
-								personalInformationErrors,
-								'inviteCode',
-								'users.create.form.from_inviteCode',
-							)}
-						</Grid>
-
-						<Grid item xs={12} sm={2}>
-							{renderSwitch(personalInformationRegister, control, 'isStaff', 'users.create.form.field.is_staff')}
-						</Grid>
-						<Grid item xs={12} sm={2}>
-							{renderSwitch(personalInformationRegister, control, 'isSuperuser', 'users.create.form.field.is_superuser')}
-						</Grid>
-						<Grid item xs={12} sm={2}>
-							{renderSwitch(personalInformationRegister, control, 'isActive', 'users.create.form.field.is_active')}
-						</Grid>
-					</Grid>
-
-					<Box className={classes.actions}>
-						<Grid container spacing={2}>
-							<Grid item xs={12} sm={6}>
-								<Button onClick={history.goBack} variant="contained" type="button" fullWidth>
-									Back
-								</Button>
-							</Grid>
-							<Grid item xs={12} sm={6}>
-								<ButtonLoader
-									variant="contained"
-									tooltip={intl.formatMessage({ id: 'settings.form.button.update.tooltip' })}
-									loader={updatePersonalInformationLoading}
-									type="submit"
-									fullWidth
-									disabled={!isPersonalInformationValid || isPersonalInformationSubmitting}>
-									Update
-								</ButtonLoader>
-							</Grid>
-						</Grid>
+						</Box>
+						<Box sx={{ flex: 1 }}>
+							<Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+								<h1 style={{ margin: 0 }}>{`${user.firstName} ${user.lastName}`}</h1>
+								<div>{user.email}</div>
+								<div>ID: {user.id}</div>
+							</Box>
+						</Box>
 					</Box>
-				</form>
-			</TabPanel>
-			<TabPanel value={selectedTab} index={1}>
-				<Grid container spacing={6}>
-					<Grid item xs={12} sm={6}>
-						<UserManagePassword user={user} />
-					</Grid>
-					<Grid item xs={12} sm={6}>
-						<UserResetPassword user={user} />
-					</Grid>
-				</Grid>
-			</TabPanel>
+
+					<Tabs
+						value={selectedTab}
+						onChange={(_, tab) => setSelectedTab(tab)}
+						indicatorColor="primary"
+						textColor="primary"
+						variant="scrollable"
+						scrollButtons="auto"
+						aria-label="scrollable tabs">
+						<Tab label="Personal" />
+						<Tab label="Administration" />
+					</Tabs>
+
+					<TabPanel value={selectedTab} index={0}>
+						<h2>Personal Information</h2>
+						<form onSubmit={handleSubmit(onSubmit)}>
+							<Grid container spacing={2}>
+								<Grid item xs={12} sm={6}>
+									{renderTextField(control, errors, 'email', 'users.create.form.field.email', {
+										type: 'email',
+										required: true,
+									})}
+								</Grid>
+								<Grid item xs={12} sm={6}>
+									{renderTextField(control, errors, 'firstName', 'users.create.form.field.firstName', {
+										required: true,
+									})}
+								</Grid>
+
+								<Grid item xs={12} sm={6}>
+									{renderTextField(control, errors, 'middleName', 'users.create.form.field.middleName')}
+								</Grid>
+								<Grid item xs={12} sm={6}>
+									{renderTextField(control, errors, 'lastName', 'users.create.form.field.lastName')}
+								</Grid>
+
+								<Grid item xs={12} sm={6}>
+									{renderTextField(control, errors, 'mobileNumber', 'users.create.form.field.mobileNumber')}
+								</Grid>
+								<Grid item xs={12} sm={6}>
+									{renderAutoComplete(control, errors, 'gender', genderOptions, 'users.create.form.field.gender')}
+								</Grid>
+
+								<Grid item xs={12} sm={6}>
+									{renderDatePickerField(control, errors, 'dateOfBirth', 'users.create.form.field.dateOfBirth')}
+								</Grid>
+								<Grid item xs={12} sm={6}>
+									{renderAutoComplete(
+										control,
+										errors,
+										'nationality',
+										nationalityOptions?.allNationalities,
+										'users.create.form.field.nationality',
+									)}
+								</Grid>
+
+								<Grid item xs={12} sm={6}>
+									{renderAutoComplete(
+										control,
+										errors,
+										'timezone',
+										timezoneOptions?.allTimezones,
+										'users.create.form.field.timezone',
+									)}
+								</Grid>
+								<Grid item xs={12} sm={6}>
+									{renderTextField(control, errors, 'address', 'users.create.form.field.address')}
+								</Grid>
+
+								<Grid item xs={12} sm={6}>
+									{renderTextField(control, errors, 'inviteCode', 'users.create.form.field.inviteCode')}
+								</Grid>
+								<Grid item xs={12} sm={6}>
+									{renderTextField(control, errors, 'company', 'users.create.form.field.companyName')}
+								</Grid>
+
+								<Grid item xs={12} sm={6}>
+									{renderTextField(control, errors, 'legacyId', 'users.create.form.field.legacyId')}
+								</Grid>
+								<Grid item xs={12} sm={6}>
+									{renderTextField(control, errors, 'extraInfo', 'users.create.form.field.extraInfo')}
+								</Grid>
+
+								<Grid item xs={12} sm={2}>
+									{renderSwitch(control, 'isStaff', 'users.create.form.field.is_staff')}
+								</Grid>
+								<Grid item xs={12} sm={2}>
+									{renderSwitch(control, 'isSuperuser', 'users.create.form.field.is_superuser')}
+								</Grid>
+								<Grid item xs={12} sm={2}>
+									{renderSwitch(control, 'isActive', 'users.create.form.field.is_active')}
+								</Grid>
+
+								<Grid container justifyContent="flex-end" spacing={2}>
+									<Grid item>
+										<Button onClick={history.goBack} variant="contained" type="button">
+											Back
+										</Button>
+									</Grid>
+									<Grid item>
+										<ButtonLoader
+											variant="contained"
+											tooltip={intl.formatMessage({ id: 'settings.form.button.update.tooltip' })}
+											loader={updateLoading}
+											type="submit"
+											disabled={!isValid || isSubmitting || !isDirty}>
+											Update
+										</ButtonLoader>
+									</Grid>
+								</Grid>
+							</Grid>
+						</form>
+					</TabPanel>
+					<TabPanel value={selectedTab} index={1}>
+						<Grid container spacing={6}>
+							<Grid item xs={12} sm={6}>
+								<UserManagePassword user={user} />
+							</Grid>
+							<Grid item xs={12} sm={6}>
+								<UserResetPassword user={user} />
+							</Grid>
+						</Grid>
+					</TabPanel>
+				</>
+			)}
 		</Box>
 	);
 };
